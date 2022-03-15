@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    command: --init-file /data/application/init.sql
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./init.sql:/data/application/init.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=0000
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=0000
+      - MYSQL_DATABASE=fleet_beacon

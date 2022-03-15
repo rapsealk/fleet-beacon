@@ -1,10 +1,13 @@
+import logging
 import os
 import re
 from contextlib import contextmanager
 
-from sqlalchemy import create_engine, orm
+from sqlalchemy import create_engine, orm, inspect
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import Session, sessionmaker
+
+logger = logging.getLogger(__name__)
 
 
 def resolve_table_name(name):
@@ -68,6 +71,11 @@ class Database:
 
     def init_database(self):
         from src.fleet_beacon.fleet.models import Fleet
+        from src.fleet_beacon.mission.models import Mission
+        from src.fleet_beacon.robot.models import Robot
+        from src.fleet_beacon.task.models import Task
+        from src.fleet_beacon.warehouse.models import Warehouse
+        from src.fleet_beacon.waypoint.models import Waypoint
 
         Base.metadata.create_all(self._engine)
 

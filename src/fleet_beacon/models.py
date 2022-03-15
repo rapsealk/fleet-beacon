@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from pydantic.fields import Field
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Column, DateTime, event
 
 
 class TimeStampMixin:

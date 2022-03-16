@@ -8,6 +8,6 @@ class TaskTypes(FleetBeaconEnum):
 
 
 class TaskStatus(FleetBeaconEnum):
-    allocated = "Allocated"
+    assigned = "Assigned"
     executed = "Executed"
-    achieved = "Achieved"
+    accomplished = "Accomplished"

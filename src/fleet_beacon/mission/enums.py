@@ -2,6 +2,6 @@ from src.fleet_beacon.enums import FleetBeaconEnum
 
 
 class MissionStatus(FleetBeaconEnum):
-    allocated = "Allocated"
+    assigned = "Assigned"
     executed = "Executed"
     closed = "Closed"

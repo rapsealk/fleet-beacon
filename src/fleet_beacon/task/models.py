@@ -10,7 +10,7 @@ class Task(Base, TimeStampMixin):
     id = Column(Integer, primary_key=True)
     type = Column(String(7), nullable=False)
     mission = Column(Integer, ForeignKey(Mission.id, ondelete="CASCADE"), nullable=False)
-    status = Column(String(9), default=TaskStatus.allocated)
+    status = Column(String(12), default=TaskStatus.assigned)
 
 
 # Pydantic models...

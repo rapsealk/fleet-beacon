@@ -7,7 +7,7 @@ from src.fleet_beacon.mission.enums import MissionStatus
 
 class Mission(Base, TimeStampMixin):
     id = Column(Integer, primary_key=True)
-    status = Column(String(9), default=MissionStatus.allocated)
+    status = Column(String(8), default=MissionStatus.assigned)
 
 
 # Pydantic models...

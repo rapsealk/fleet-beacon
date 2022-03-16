@@ -63,6 +63,7 @@ class CustomBase:
 
 Base = declarative_base(cls=CustomBase)
 
+
 class Database:
     def __init__(self, url: str = 'mysql://root:0000@localhost:3306/fleet_beacon'):
         self._engine = create_engine(url)
@@ -70,12 +71,13 @@ class Database:
             sessionmaker(autocommit=False, autoflush=False, bind=self._engine))
 
     def init_database(self):
-        from src.fleet_beacon.fleet.models import Fleet
-        from src.fleet_beacon.mission.models import Mission
-        from src.fleet_beacon.robot.models import Robot
-        from src.fleet_beacon.task.models import Task
-        from src.fleet_beacon.warehouse.models import Warehouse
-        from src.fleet_beacon.waypoint.models import Waypoint
+        from src.fleet_beacon.auth.models import FleetBeaconUser    # noqa: F401
+        from src.fleet_beacon.fleet.models import Fleet             # noqa: F401
+        from src.fleet_beacon.mission.models import Mission         # noqa: F401
+        from src.fleet_beacon.robot.models import Robot             # noqa: F401
+        from src.fleet_beacon.task.models import Task               # noqa: F401
+        from src.fleet_beacon.warehouse.models import Warehouse     # noqa: F401
+        from src.fleet_beacon.waypoint.models import Waypoint       # noqa: F401
 
         Base.metadata.create_all(self._engine)
 

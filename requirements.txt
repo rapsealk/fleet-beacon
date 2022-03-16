@@ -1,3 +1,4 @@
+bcrypt~=3.2.0
 fastapi
 pymysql==1.0.2
 sqlalchemy==1.4.32

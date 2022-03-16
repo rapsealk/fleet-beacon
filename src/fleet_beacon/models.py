@@ -1,7 +1,10 @@
 from datetime import datetime
 
-from pydantic.fields import Field
+from pydantic import BaseModel
+from pydantic.types import conint
 from sqlalchemy import Column, DateTime, event
+
+PrimaryKey = conint(gt=0, lt=2**31-1)
 
 
 class TimeStampMixin:
@@ -17,3 +20,16 @@ class TimeStampMixin:
     @classmethod
     def __declare_last__(cls):
         event.listen(cls, "before_update", cls._updated_at)
+
+
+# Pydantic models...
+class FleetBeaconBase(BaseModel):
+    class Config:
+        orm_mode = True
+        validate_assignment = True
+        arbitrary_types_allows = True
+        anystr_strip_whitespace = True
+
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%SZ") if v else None
+        }

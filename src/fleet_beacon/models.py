@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from pydantic import BaseModel
 from pydantic.types import conint
@@ -6,16 +6,18 @@ from sqlalchemy import Column, DateTime, event
 
 PrimaryKey = conint(gt=0, lt=2**31-1)
 
+KST = timezone(timedelta(hours=9))
+
 
 class TimeStampMixin:
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(tz=KST))
     created_at._creation_order = 9998
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=lambda: datetime.now(tz=KST))
     updated_at._creation_order = 9998
 
     @staticmethod
     def _updated_at(mapper, connection, target):
-        target.updated_at = datetime.utcnow()
+        target.updated_at = datetime.now(tz=KST)
 
     @classmethod
     def __declare_last__(cls):

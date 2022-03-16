@@ -1,13 +1,16 @@
 import logging
-import os
 import re
-from contextlib import contextmanager
 
-from sqlalchemy import create_engine, orm, inspect
+from starlette.requests import Request
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
+
+
+def get_db(request: Request) -> Session:
+    return request.state.db
 
 
 def resolve_table_name(name):
@@ -67,8 +70,10 @@ Base = declarative_base(cls=CustomBase)
 class Database:
     def __init__(self, url: str = 'mysql://root:0000@localhost:3306/fleet_beacon'):
         self._engine = create_engine(url)
+        """
         self._session_factory = orm.scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self._engine))
+        """
 
     def init_database(self):
         from src.fleet_beacon.auth.models import FleetBeaconUser    # noqa: F401
@@ -79,8 +84,13 @@ class Database:
         from src.fleet_beacon.warehouse.models import Warehouse     # noqa: F401
         from src.fleet_beacon.waypoint.models import Waypoint       # noqa: F401
 
-        Base.metadata.create_all(self._engine)
+        Base.metadata.create_all(self.engine)
 
+    @property
+    def engine(self):
+        return self._engine
+
+    """
     @contextmanager
     def session(self):
         session: Session = self.session_factory()
@@ -95,3 +105,4 @@ class Database:
     @property
     def session_factory(self) -> Session:
         return self._session_factory
+    """

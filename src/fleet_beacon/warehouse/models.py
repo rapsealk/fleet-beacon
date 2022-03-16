@@ -1,4 +1,5 @@
-from typing import Optional
+from datetime import datetime
+from typing import List, Optional
 
 from sqlalchemy import Column, Float, Integer, String
 
@@ -15,7 +16,6 @@ class Warehouse(Base, TimeStampMixin):
 
 # Pydantic models...
 class WarehouseBase(FleetBeaconBase):
-    id: PrimaryKey
     name: Optional[str]
     latitude: float
     longitude: float
@@ -23,6 +23,17 @@ class WarehouseBase(FleetBeaconBase):
 
 class WarehouseCreate(WarehouseBase):
     pass
+
+
+class WarehouseRead(WarehouseBase):
+    id: PrimaryKey
+    created_at: datetime
+    updated_at: datetime
+
+
+class WarehouseList(FleetBeaconBase):
+    total: int
+    items: List[WarehouseRead] = []
 
 
 class WarehouseUpdate(WarehouseBase):

@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  mavros:
+    container_name: mavros
+    image: mavros:melodic-ros-base
+    volumes:
+      - ./catkin_ws/src/beginner_tutorials:/root/catkin_ws/src/beginner_tutorials
+    network_mode: host

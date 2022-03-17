@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.fleet_beacon.database import get_db
-from src.fleet_beacon.warehouse.models import PrimaryKey, WarehouseCreate, WarehouseRead, WarehouseList, WarehouseUpdate
+from src.fleet_beacon.models import PrimaryKey
+from src.fleet_beacon.warehouse.models import WarehouseCreate, WarehouseRead, WarehouseList, WarehouseUpdate
 from src.fleet_beacon.warehouse.service import create, delete, get, get_all, update
 
 router = APIRouter()
@@ -33,7 +34,7 @@ def update_warehouse(*, db_session: Session = Depends(get_db), warehouse_id: Pri
     if not (warehouse := get(db_session=db_session, warehouse_id=warehouse_id)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=[{"msg": "The warehouse with this id does not exists."}]
+            detail=[{"msg": f"The warehouse with this id({warehouse_id}) does not exists."}]
         )
     warehouse = update(db_session=db_session, warehouse=warehouse, warehouse_in=warehouse_in)
     return warehouse

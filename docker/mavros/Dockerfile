@@ -6,7 +6,7 @@ RUN sudo apt-get install python-catkin-tools python-rosinstall-generator -y
 # Install Python3 packages
 RUN sudo apt-get install python3-pip -y
 RUN python3 -m pip install --upgrade pip
-RUN python3 -m pip install requests
+# RUN python3 -m pip install requests
 
 RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws

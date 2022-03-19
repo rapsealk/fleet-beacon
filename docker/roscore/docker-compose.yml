@@ -1,8 +1,0 @@
-version: "3.7"
-services:
-  roscore:
-    container_name: roscore
-    image: roscore:melodic-ros-base
-    ports:
-      - 11311:11311
-    network_mode: host

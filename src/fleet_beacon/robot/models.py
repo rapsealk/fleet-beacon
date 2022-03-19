@@ -17,11 +17,11 @@ class Robot(Base, TimeStampMixin):
     armed = Column(Boolean, default=False)
     guided = Column(Boolean, default=False)
     mode = Column(String(12), default=str(PX4RobotMode.offboard))
-    system_status = Column(Integer)
-    latitude = Column(Float)
-    longitude = Column(Float)
-    altitude = Column(Float)
-    yaw = Column(Float)
+    system_status = Column(Integer, default=0)
+    latitude = Column(Float, default=0.0)
+    longitude = Column(Float, default=0.0)
+    altitude = Column(Float, default=0.0)
+    yaw = Column(Float, default=0.0)
     fleet = Column(Integer, ForeignKey(Fleet.id), nullable=True)
     warehouse = Column(Integer, ForeignKey(Warehouse.id), nullable=False)
 
@@ -29,6 +29,15 @@ class Robot(Base, TimeStampMixin):
 # Pydantic models...
 class RobotBase(FleetBeaconBase):
     uuid: str
+    warehouse: int
+
+
+class RobotCreate(RobotBase):
+    pass
+
+
+class RobotRead(RobotBase):
+    id: PrimaryKey
     connected: bool = False
     armed: bool = False
     guided: bool = False
@@ -39,15 +48,6 @@ class RobotBase(FleetBeaconBase):
     altitude: float
     yaw: float
     fleet: Optional[int] = None
-    warehouse: int
-
-
-class RobotCreate(RobotBase):
-    pass
-
-
-class RobotRead(RobotBase):
-    id: PrimaryKey
     created_at: datetime
     updated_at: datetime
 
@@ -58,4 +58,14 @@ class RobotList(FleetBeaconBase):
 
 
 class RobotUpdate(RobotBase):
-    pass
+    id: PrimaryKey
+    connected: bool = False
+    armed: bool = False
+    guided: bool = False
+    mode: str = str(PX4RobotMode.offboard)
+    system_status: int = 0
+    latitude: float
+    longitude: float
+    altitude: float
+    yaw: float
+    fleet: Optional[int] = None

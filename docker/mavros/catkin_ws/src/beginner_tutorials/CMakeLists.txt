@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   mavros_msgs
+  geographic_msgs
   geometry_msgs
   mavros
 )
@@ -137,6 +138,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/beginner_tutorials_node.cpp)
+add_executable(px4_node src/px4_node.cpp)
 add_executable(offb_node src/offb_node.cpp)
 
 ## Rename C++ executable without prefix
@@ -153,6 +155,7 @@ add_executable(offb_node src/offb_node.cpp)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(px4_node ${catkin_LIBRARIES})
 target_link_libraries(offb_node ${catkin_LIBRARIES})
 
 #############

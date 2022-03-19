@@ -4,9 +4,10 @@ RUN sudo apt-get update
 RUN sudo apt-get install python-catkin-tools python-rosinstall-generator -y
 
 # Install Python3 packages
-RUN sudo apt-get install python3-pip -y
+RUN sudo apt-get install python3-pip python3-yaml -y
 RUN python3 -m pip install --upgrade pip
-# RUN python3 -m pip install requests
+RUN python3 -m pip install rospkg catkin_pkg
+RUN python3 -m pip install requests
 
 RUN mkdir -p /root/catkin_ws/src
 WORKDIR /root/catkin_ws
@@ -33,5 +34,10 @@ RUN catkin build
 
 SHELL [ "/bin/bash", "-c" ]
 RUN source devel/setup.bash
+
+RUN export ROS_HOSTNAME=127.0.0.1
+RUN export ROS_MASTER_URI=http://localhost:11311
+
+RUN roscore &
 
 CMD [ "/bin/bash" ]

@@ -10,15 +10,7 @@ KST = timezone(timedelta(hours=9))
 
 async def create(*, db_session: Session, robot_in: RobotCreate) -> Robot:
     """Creates a new robot."""
-    robot = Robot(
-        uuid=robot_in.uuid,
-        system_status=robot_in.system_status,
-        latitude=robot_in.latitude,
-        longitude=robot_in.longitude,
-        altitude=robot_in.altitude,
-        yaw=robot_in.yaw,
-        warehouse=robot_in.warehouse
-    )
+    robot = Robot(**robot_in.dict(skip_defaults=True))
     db_session.add(robot)
     db_session.commit()
 

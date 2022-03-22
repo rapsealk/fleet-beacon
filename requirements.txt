@@ -1,5 +1,7 @@
 bcrypt~=3.2.0
 fastapi
+kafka-python~=2.0.2
 pymysql==1.0.2
+redis~=4.1.4
 sqlalchemy==1.4.32
 uvicorn[standard]

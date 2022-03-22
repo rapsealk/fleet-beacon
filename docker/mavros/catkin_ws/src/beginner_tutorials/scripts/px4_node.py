@@ -6,9 +6,11 @@ import rospy
 from mavros_msgs.msg import State
 from mavros_msgs.srv import CommandBool, CommandBoolResponse, SetMode, SetModeResponse
 from geographic_msgs.msg import GeoPoseStamped
+from sensor_msgs.msg import NavSatFix, NavSatStatus
 
 current_state = State()
 global_position = GeoPoseStamped()
+nav_sat_fix = NavSatFix()
 
 
 def _setpoint_position_global_callback(message: GeoPoseStamped):
@@ -41,8 +43,15 @@ def main():
     global_position.pose.position.longitude = 0
     global_position.pose.position.altitude = 0
 
+    nav_sat_fix.status.status = NavSatStatus.STATUS_FIX
+    nav_sat_fix.status.service = NavSatStatus.SERVICE_GPS
+    # nav_sat_fix.latitude = 0
+    # nav_sat_fix.longitude = 0
+    # nav_sat_fix.altitude = 0
+
     # Publishers
     state_publisher = rospy.Publisher("mavros/state", State, queue_size=10)
+    global_position_publisher = rospy.Publisher("mavros/global_position/global", NavSatFix, queue_size=10)
 
     # Subscribers
     _ = rospy.Subscriber("mavros/setpoint_position/global", GeoPoseStamped, _setpoint_position_global_callback, queue_size=10)
@@ -54,8 +63,9 @@ def main():
     rate = rospy.Rate(20.0)     # (OFFBOARD) publishing rate MUST be faster than 2Hz
 
     while not rospy.is_shutdown() and not current_state.connected:
-        # print('[{}] current_state: {}'.format(datetime.now().isoformat(), current_state))
+        # rospy.loginfo('[{}] current_state: {}'.format(datetime.now().isoformat(), current_state))
         state_publisher.publish(current_state)
+        global_position_publisher.publish(nav_sat_fix)
         rate.sleep()
 
     rospy.spin()

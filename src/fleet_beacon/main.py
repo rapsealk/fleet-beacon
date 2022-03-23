@@ -4,11 +4,13 @@ from typing import Callable, Optional, Final
 from contextvars import ContextVar
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker, scoped_session
 from starlette.requests import Request
 
 from src.fleet_beacon import config
 from src.fleet_beacon.api import router as api_router
+from src.fleet_beacon.view import router as view_router
 from src.fleet_beacon.database import Database
 
 REQUEST_ID_CTX_KEY: Final[str] = "request_id"
@@ -49,6 +51,9 @@ def create_app() -> FastAPI:
         return response
 
     app.include_router(api_router)
+    app.include_router(view_router)
+
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
     return app
 

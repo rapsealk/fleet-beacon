@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<title>Fleet Beacon | FMS</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#87CEFA">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Fleet Beacon | FMS">
+    <meta property="og:description" content="Fleet Management System by rapsealk.">
+    <meta property="og:image" content="/img/venezia.jpg">
+
+	<!--     Fonts and icons     -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+
+	<!-- CSS Files -->
+    <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', path='/css/material-kit.css') }}" rel="stylesheet" />
+
+    <style>
+        .table > thead > tr > th,
+        .table > tbody > tr > th,
+        .table > tfoot > tr > th,
+        .table > thead > tr > td,
+        .table > tbody > tr > td,
+        .table > tfoot > tr > td {
+            vertical-align: middle !important;
+        }
+    </style>
+</head>
+
+<body class="signup-page">
+	<nav class="navbar navbar-transparent navbar-absolute">
+    	<div class="container">
+        	<!-- Brand and toggle get grouped for better mobile display -->
+        	<div class="navbar-header">
+        		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example">
+            		<span class="sr-only">Toggle navigation</span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+        		</button>
+                <a class="navbar-brand" href="/">Fleet Managemenet System</a>
+        	</div>
+
+        	<div class="collapse navbar-collapse" id="navigation-example">
+        		<ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a data-placement="bottom" href="/warehouse" class="btn btn-white btn-simple btn-just-icon">
+                            Warehouse
+                        </a>
+                    </li>
+                    <li>
+                        <a data-placement="bottom" href="/fleet" class="btn btn-white btn-simple btn-just-icon">
+                            Fleet
+                        </a>
+                    </li>
+                    <li>
+                        <a data-placement="bottom" href="/mission" class="btn btn-white btn-simple btn-just-icon">
+                            Mission
+                        </a>
+                    </li>
+        		</ul>
+        	</div>
+    	</div>
+    </nav>
+
+    <div class="wrapper">
+		<div class="header header-filter" style="background-image: url({{ url_for('static', path='/img/venezia.jpg') }}); background-size: cover; background-position: top center;">
+			<div class="container" id="main-container">
+				<div class="row">
+                    <!-- Table -->
+                    <div class="col-md-12">
+                        <div class="card card-signup">
+                            <table class="table" style="height: 600px;">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">#</th>
+                                        <th>Name</th>
+                                        <th class="text-right">Actions</th>
+                                        <th class="text-center">
+                                            <button type="button" id="btn-refresh" rel="tooltip" title="Refresh" class="btn btn-info btn-simple btn-xs">
+                                                <i class="fa fa-refresh"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center">1</td>
+                                        <td>Andrew Mike</td>
+                                        <td class="td-actions text-right">
+                                            <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </td>    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+				</div>
+            </div>
+
+			<footer class="footer">
+		        <div class="container">
+		            <nav class="pull-left">
+						<ul>
+							<!--li>
+								<a href="https://rapsealk.tistory.com">
+								   Blog
+								</a>
+							</li-->
+						</ul>
+		            </nav>
+		            <div class="copyright pull-right">
+		                &copy; {{ year }}, made with <i class="fa fa-heart heart"></i> by <a href="#" target="_blank">rapsealk</a>
+		            </div>
+		        </div>
+		    </footer>
+		</div>
+    </div>
+</body>
+    <script type="text/javascript">
+        // Fetch warehouses
+        /*
+        function fetchWarehouses() {
+            fetch("http://localhost:8000/api/warehouse")
+                .then((response) => response.json())
+                .then((response) => {
+                    const tbody = document.querySelector("table.table > tbody");
+                    tbody.innerHTML = "";
+                    console.log(tbody);
+                    console.log(JSON.stringify(response));
+                    response.items.forEach((item, _) => {
+                        const tr = document.createElement("tr");
+                        let td = document.createElement("td");
+                        //td.className = "text-center";
+                        td.innerText = `${item.id}`;
+                        tr.appendChild(td);
+                        td = document.createElement("td");
+                        td.innerText = item.name;
+                        tr.appendChild(td);
+                        td = document.createElement("td");
+                        td.className = "td-actions text-right";
+                        td.innerHTML = `
+                            <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        `;
+                        tr.appendChild(td);
+                        tr.addEventListener("click", (e) => {
+                            warehouseMarker?.setMap(null);
+                            const warehousePosition = new kakao.maps.LatLng(item.latitude, item.longitude);
+                            map.setLevel(4);
+                            map.panTo(warehousePosition);
+                            warehouseMarker = new kakao.maps.Marker({
+                                position: warehousePosition,
+                                clickable: true,
+                                map
+                            });
+                        });
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(console.error);
+        }
+        fetchWarehouses();
+
+        document.getElementById("btn-refresh").addEventListener("click", fetchWarehouses);
+        */
+    </script>
+
+    <!--   Core JS Files   -->
+	<script src="{{ url_for('static', path='/js/jquery.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', path='/js/bootstrap.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', path='/js/material.min.js') }}" type="text/javascript"></script>
+
+	<!-- Control Center for Material Kit: activating the ripples, parallax effects, scripts from the example pages etc -->
+	<script src="{{ url_for('static', path='/js/material-kit.js') }}" type="text/javascript"></script>
+</html>

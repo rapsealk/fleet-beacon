@@ -7,7 +7,7 @@ from src.fleet_beacon.database import Base
 from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
 from src.fleet_beacon.robot.enums import PX4RobotMode
 from src.fleet_beacon.fleet.models import Fleet
-from src.fleet_beacon.warehouse.models import Warehouse
+from src.fleet_beacon.warehouse.models import Warehouse, WarehouseRead
 
 
 class Robot(Base, TimeStampMixin):
@@ -55,6 +55,10 @@ class RobotRead(RobotBase):
 class RobotList(FleetBeaconBase):
     total: int
     items: List[RobotRead] = []
+
+
+class RobotWarehouseDetail(WarehouseRead):
+    robots: RobotList
 
 
 class RobotUpdate(RobotBase):

@@ -50,25 +50,7 @@
                 <a class="navbar-brand" href="/">Fleet Managemenet System</a>
         	</div>
 
-        	<div class="collapse navbar-collapse" id="navigation-example">
-        		<ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a data-placement="bottom" href="/warehouse" class="btn btn-white btn-simple btn-just-icon">
-                            Warehouse
-                        </a>
-                    </li>
-                    <li>
-                        <a data-placement="bottom" href="/fleet" class="btn btn-white btn-simple btn-just-icon">
-                            Fleet
-                        </a>
-                    </li>
-                    <li>
-                        <a data-placement="bottom" href="/mission" class="btn btn-white btn-simple btn-just-icon">
-                            Mission
-                        </a>
-                    </li>
-        		</ul>
-        	</div>
+            {% include "header.html" %}
     	</div>
     </nav>
 
@@ -84,6 +66,7 @@
                                     <tr>
                                         <th class="text-center">#</th>
                                         <th>Name</th>
+                                        <th>Fleet</th>
                                         <th class="text-right">Actions</th>
                                         <th class="text-center">
                                             <button type="button" id="btn-refresh" rel="tooltip" title="Refresh" class="btn btn-info btn-simple btn-xs">
@@ -93,6 +76,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!--
                                     <tr>
                                         <td class="text-center">1</td>
                                         <td>Andrew Mike</td>
@@ -102,6 +86,7 @@
                                             </button>
                                         </td>    
                                     </tr>
+                                    -->
                                 </tbody>
                             </table>
                         </div>
@@ -129,6 +114,40 @@
     </div>
 </body>
     <script type="text/javascript">
+        function fetchRobotsInWarehouse() {
+            fetch("http://localhost:8000/api/warehouse/{{ warehouse_id }}/detail")
+                .then((response) => response.json())
+                .then((response) => {
+                    const tbody = document.querySelector("table.table > tbody");
+                    tbody.innerHTML = "";
+                    response.robots.items.forEach((item, _) => {
+                        const tr = document.createElement("tr");
+                        let td = document.createElement("td");
+                        //td.className = "text-center";
+                        td.innerText = `${item.id}`;
+                        tr.appendChild(td);
+                        td = document.createElement("td");
+                        td.innerText = item.uuid;
+                        tr.appendChild(td);
+                        td = document.createElement("td");
+                        td.innerText = `${item.fleet || "-"}`;
+                        tr.appendChild(td);
+                        td = document.createElement("td");
+                        td.className = "td-actions text-right";
+                        td.innerHTML = `
+                            <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        `;
+                        tr.appendChild(td);
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(console.error);
+        }
+
+        fetchRobotsInWarehouse();
+
         // Fetch warehouses
         /*
         function fetchWarehouses() {

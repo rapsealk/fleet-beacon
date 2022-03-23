@@ -36,7 +36,8 @@ def get_warehouse_view(request: Request, db_session: Session = Depends(get_db)):
 def get_warehouse_detail_view(request: Request, warehouse_id: int, db_session: Session = Depends(get_db)):
     return templates.TemplateResponse("warehouse_detail.html", context={
         "request": request,
-        "year": datetime.today().year
+        "year": datetime.today().year,
+        "warehouse_id": warehouse_id
     })
 
 

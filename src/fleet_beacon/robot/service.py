@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.robot.models import Robot, RobotCreate, RobotUpdate
+from src.fleet_beacon.robot.models import Robot, RobotCreate, RobotList, RobotUpdate
 
 KST = timezone(timedelta(hours=9))
 
@@ -27,6 +27,11 @@ async def get_all(*, db_session: Session) -> List[Robot]:
 
 async def get_by_uuid(*, db_session: Session, uuid: str) -> Optional[Robot]:
     return db_session.query(Robot).filter(Robot.uuid == uuid).first()
+
+
+async def get_by_warehouse(*, db_session: Session, warehouse_id: int) -> RobotList:
+    robots = db_session.query(Robot).filter(Robot.warehouse == warehouse_id).all()
+    return RobotList(total=len(robots), items=robots)
 
 
 async def get_or_create(*, db_session: Session, robot_in: RobotCreate) -> Robot:

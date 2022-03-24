@@ -50,25 +50,7 @@
                 <a class="navbar-brand" href="/">Fleet Managemenet System</a>
         	</div>
 
-        	<div class="collapse navbar-collapse" id="navigation-example">
-        		<ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a data-placement="bottom" href="/warehouse" class="btn btn-white btn-simple btn-just-icon">
-                            Warehouse
-                        </a>
-                    </li>
-                    <li>
-                        <a data-placement="bottom" href="/fleet" class="btn btn-white btn-simple btn-just-icon">
-                            Fleet
-                        </a>
-                    </li>
-                    <li>
-                        <a data-placement="bottom" href="/mission" class="btn btn-white btn-simple btn-just-icon">
-                            Mission
-                        </a>
-                    </li>
-        		</ul>
-        	</div>
+            {% include "header.html" %}
     	</div>
     </nav>
 
@@ -126,7 +108,7 @@
 						</ul>
 		            </nav>
 		            <div class="copyright pull-right">
-		                &copy; {{ year }}, made with <i class="fa fa-heart heart"></i> by <a href="#" target="_blank">rapsealk</a>
+		                &copy; <span id="year"></span> made with <i class="fa fa-heart heart"></i> by <a href="#" target="_blank">rapsealk</a>
 		            </div>
 		        </div>
 		    </footer>
@@ -139,7 +121,7 @@
     <script type="text/javascript">
         const container = document.getElementById("map");
         const options = {
-            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            center: new kakao.maps.LatLng(37.5667791508359, 126.97864095263),
             level: 3
         };
         const map = new kakao.maps.Map(container, options);
@@ -193,7 +175,7 @@
 
         // Fetch warehouses
         function fetchWarehouses() {
-            fetch("http://localhost:8000/api/warehouse")
+            fetch(`${window.location.origin}/api/warehouse`)
                 .then((response) => response.json())
                 .then((response) => {
                     const tbody = document.querySelector("table.table > tbody");
@@ -248,4 +230,8 @@
 
 	<!-- Control Center for Material Kit: activating the ripples, parallax effects, scripts from the example pages etc -->
 	<script src="{{ url_for('static', path='/js/material-kit.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        document.getElementById("year").innerText = new Date().getFullYear().toString();
+    </script>
 </html>

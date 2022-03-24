@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -18,7 +16,6 @@ templates = Jinja2Templates(directory="templates")
 def get_main_view(request: Request, db_session: Session = Depends(get_db)):
     return templates.TemplateResponse("index.html", context={
         "request": request,
-        "year": datetime.today().year,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY
     })
 
@@ -27,25 +24,22 @@ def get_main_view(request: Request, db_session: Session = Depends(get_db)):
 def get_warehouse_view(request: Request, db_session: Session = Depends(get_db)):
     return templates.TemplateResponse("warehouse.html", context={
         "request": request,
-        "year": datetime.today().year,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY
     })
 
 
 @router.get("/warehouse/{warehouse_id}", response_class=HTMLResponse)
-def get_warehouse_detail_view(request: Request, warehouse_id: int, db_session: Session = Depends(get_db)):
+def get_warehouse_detail_view(request: Request, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
     return templates.TemplateResponse("warehouse_detail.html", context={
         "request": request,
-        "year": datetime.today().year,
         "warehouse_id": warehouse_id
     })
 
 
 @router.get("/fleet", response_class=HTMLResponse)
 def get_fleet_view(request: Request, db_session: Session = Depends(get_db)):
-    return templates.TemplateResponse("index.html", context={
+    return templates.TemplateResponse("fleet.html", context={
         "request": request,
-        "year": datetime.today().year,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY
     })
 
@@ -54,7 +48,6 @@ def get_fleet_view(request: Request, db_session: Session = Depends(get_db)):
 def get_mission_view(request: Request, db_session: Session = Depends(get_db)):
     return templates.TemplateResponse("index.html", context={
         "request": request,
-        "year": datetime.today().year,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY
     })
 

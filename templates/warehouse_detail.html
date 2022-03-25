@@ -113,13 +113,13 @@
     </div>
 </body>
     <script type="text/javascript">
-        function fetchRobotsInWarehouse() {
+        function fetchUnitsInWarehouse() {
             fetch(`${window.location.origin}/api/warehouse/{{ warehouse_id }}/detail`)
                 .then((response) => response.json())
                 .then((response) => {
                     const tbody = document.querySelector("table.table > tbody");
                     tbody.innerHTML = "";
-                    response.robots.items.forEach((item, _) => {
+                    response.units.items.forEach((item, _) => {
                         const tr = document.createElement("tr");
                         let td = document.createElement("td");
                         //td.className = "text-center";
@@ -145,7 +145,7 @@
                 .catch(console.error);
         }
 
-        fetchRobotsInWarehouse();
+        fetchUnitsInWarehouse();
     </script>
 
     <!--   Core JS Files   -->

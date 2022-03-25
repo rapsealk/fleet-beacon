@@ -79,7 +79,7 @@ class Database:
         from src.fleet_beacon.auth.models import FleetBeaconUser    # noqa: F401
         from src.fleet_beacon.fleet.models import Fleet             # noqa: F401
         from src.fleet_beacon.mission.models import Mission         # noqa: F401
-        from src.fleet_beacon.robot.models import Robot             # noqa: F401
+        from src.fleet_beacon.unit.models import Unit               # noqa: F401
         from src.fleet_beacon.warehouse.models import Warehouse     # noqa: F401
         from src.fleet_beacon.waypoint.models import Waypoint       # noqa: F401
 

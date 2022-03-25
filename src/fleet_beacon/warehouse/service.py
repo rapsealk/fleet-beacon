@@ -4,8 +4,8 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from src.fleet_beacon.warehouse.models import Warehouse, WarehouseCreate, WarehouseUpdate
-from src.fleet_beacon.robot.models import RobotWarehouseDetail
-from src.fleet_beacon.robot.service import get_by_warehouse
+from src.fleet_beacon.unit.models import UnitWarehouseDetail
+from src.fleet_beacon.unit.service import get_by_warehouse
 
 KST = timezone(timedelta(hours=9))
 
@@ -31,11 +31,11 @@ async def get_all(*, db_session: Session) -> List[Warehouse]:
     return db_session.query(Warehouse).all()
 
 
-async def get_detail(*, db_session: Session, warehouse_id: int) -> Optional[RobotWarehouseDetail]:
+async def get_detail(*, db_session: Session, warehouse_id: int) -> Optional[UnitWarehouseDetail]:
     if warehouse := db_session.query(Warehouse).filter(Warehouse.id == warehouse_id).first():
         robots = await get_by_warehouse(db_session=db_session, warehouse_id=warehouse_id)
         print(f'[Warehouse::get_detail] robots={robots}')
-        return RobotWarehouseDetail(**warehouse.dict(), robots=robots)
+        return UnitWarehouseDetail(**warehouse.dict(), robots=robots)
     else:
         return None
 

@@ -1,7 +1,7 @@
 from src.fleet_beacon.enums import FleetBeaconEnum
 
 
-class PX4RobotMode(FleetBeaconEnum):
+class PX4Mode(FleetBeaconEnum):
     manual = "MANUAL"
     acro = "ACRO"
     altitude = "ALTCTL"

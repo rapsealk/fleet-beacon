@@ -5,18 +5,18 @@ from sqlalchemy import Column, Boolean, Float, Integer, String, ForeignKey
 
 from src.fleet_beacon.database import Base
 from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
-from src.fleet_beacon.robot.enums import PX4RobotMode
+from src.fleet_beacon.unit.enums import PX4Mode
 from src.fleet_beacon.fleet.models import Fleet
 from src.fleet_beacon.warehouse.models import Warehouse, WarehouseRead
 
 
-class Robot(Base, TimeStampMixin):
+class Unit(Base, TimeStampMixin):
     id = Column(Integer, primary_key=True)
     uuid = Column(String(36), nullable=False, unique=True)  # uuid.uuid1(): Produced on separate machines
     connected = Column(Boolean, default=False)
     armed = Column(Boolean, default=False)
     guided = Column(Boolean, default=False)
-    mode = Column(String(12), default=str(PX4RobotMode.offboard))
+    mode = Column(String(12), default=str(PX4Mode.offboard))
     system_status = Column(Integer, default=0)
     latitude = Column(Float, default=0.0)
     longitude = Column(Float, default=0.0)
@@ -27,21 +27,21 @@ class Robot(Base, TimeStampMixin):
 
 
 # Pydantic models...
-class RobotBase(FleetBeaconBase):
+class UnitBase(FleetBeaconBase):
     uuid: str
     warehouse: int
 
 
-class RobotCreate(RobotBase):
+class UnitCreate(UnitBase):
     pass
 
 
-class RobotRead(RobotBase):
+class UnitRead(UnitBase):
     id: PrimaryKey
     connected: bool = False
     armed: bool = False
     guided: bool = False
-    mode: str = str(PX4RobotMode.offboard)
+    mode: str = str(PX4Mode.offboard)
     system_status: int = 0
     latitude: float
     longitude: float
@@ -52,21 +52,21 @@ class RobotRead(RobotBase):
     updated_at: datetime
 
 
-class RobotList(FleetBeaconBase):
+class UnitList(FleetBeaconBase):
     total: int
-    items: List[RobotRead] = []
+    items: List[UnitRead] = []
 
 
-class RobotWarehouseDetail(WarehouseRead):
-    robots: RobotList
+class UnitWarehouseDetail(WarehouseRead):
+    robots: UnitList
 
 
-class RobotUpdate(RobotBase):
+class UnitUpdate(UnitBase):
     id: PrimaryKey
     connected: bool = False
     armed: bool = False
     guided: bool = False
-    mode: str = str(PX4RobotMode.offboard)
+    mode: str = str(PX4Mode.offboard)
     system_status: int = 0
     latitude: float
     longitude: float

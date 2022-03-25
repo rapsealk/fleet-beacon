@@ -6,7 +6,7 @@ from src.fleet_beacon.database import get_db
 from src.fleet_beacon.models import PrimaryKey
 from src.fleet_beacon.warehouse.models import WarehouseCreate, WarehouseRead, WarehouseList, WarehouseUpdate
 from src.fleet_beacon.warehouse.service import create, delete, get, get_all, get_detail, update
-from src.fleet_beacon.robot.models import RobotWarehouseDetail
+from src.fleet_beacon.unit.models import UnitWarehouseDetail
 
 router = APIRouter()
 
@@ -24,7 +24,7 @@ async def get_warehouse(*, db_session: Session = Depends(get_db), warehouse_id: 
     return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not Found"})
 
 
-@router.get("/{warehouse_id}/detail", response_model=RobotWarehouseDetail)
+@router.get("/{warehouse_id}/detail", response_model=UnitWarehouseDetail)
 async def get_warehouse_detail(*, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
     if warehouse := await get_detail(db_session=db_session, warehouse_id=warehouse_id):
         return warehouse

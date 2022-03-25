@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<title>Fleet Beacon | FMS</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#87CEFA">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Fleet Beacon | FMS">
+    <meta property="og:description" content="Fleet Management System by rapsealk.">
+    <meta property="og:image" content="/img/venezia.jpg">
+
+	<!--     Fonts and icons     -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+
+	<!-- CSS Files -->
+    <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', path='/css/material-kit.css') }}" rel="stylesheet" />
+
+    <style>
+        .table > thead > tr > th,
+        .table > tbody > tr > th,
+        .table > tfoot > tr > th,
+        .table > thead > tr > td,
+        .table > tbody > tr > td,
+        .table > tfoot > tr > td {
+            vertical-align: middle !important;
+        }
+    </style>
+</head>
+
+<body class="signup-page">
+	<nav class="navbar navbar-transparent navbar-absolute">
+    	<div class="container">
+        	<!-- Brand and toggle get grouped for better mobile display -->
+        	<div class="navbar-header">
+        		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example">
+            		<span class="sr-only">Toggle navigation</span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+        		</button>
+                <a class="navbar-brand" href="/">Fleet Managemenet System</a>
+        	</div>
+
+            {% include "header.html" %}
+    	</div>
+    </nav>
+
+    <div class="wrapper">
+		<div class="header header-filter" style="background-image: url({{ url_for('static', path='/img/venezia.jpg') }}); background-size: cover; background-position: top center;">
+			<div class="container" id="main-container">
+				<div class="row">
+                    <div class="col-md-8">
+						<div class="card card-signup">
+                            <div id="map" style="width: 100%; height: 600px;"></div>
+						</div>
+                    </div>
+                    <!-- Table -->
+                    <div class="col-md-4">
+                        <div class="card card-signup">
+                            <table class="table" style="height: 580px; display: block;">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">#</th>
+                                        <th>Name</th>
+                                        <th class="text-right">Actions</th>
+                                        <th class="text-center">
+                                            <button type="button" id="btn-refresh" rel="tooltip" title="Refresh" class="btn btn-info btn-simple btn-xs">
+                                                <i class="fa fa-refresh"></i>
+                                            </button>
+                                            <a href="/mission/new" type="button" rel="tooltip" title="Add" class="btn btn-info btn-xs">
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+				</div>
+            </div>
+
+			<footer class="footer">
+		        <div class="container">
+		            <nav class="pull-left">
+						<ul>
+							<!--li>
+								<a href="https://rapsealk.tistory.com">
+								   Blog
+								</a>
+							</li-->
+						</ul>
+		            </nav>
+		            <div class="copyright pull-right">
+		                &copy; <span id="year"></span> made with <i class="fa fa-heart heart"></i> by <a href="#" target="_blank">rapsealk</a>
+		            </div>
+		        </div>
+		    </footer>
+		</div>
+    </div>
+</body>
+    <!-- Kakao Map -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_map_app_key }}"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_map_app_key }}&libraries=drawing"></script>
+    <script type="text/javascript">
+        Array.prototype.clear = function() { this.splice(0); }
+
+        const container = document.getElementById("map");
+        const options = {
+            center: new kakao.maps.LatLng(37.5667791508359, 126.97864095263),
+            level: 3
+        };
+        const map = new kakao.maps.Map(container, options);
+        const markers = [];
+        let polyline = null;
+
+        function drawPolyline() {
+            polyline?.setMap(null);
+            const linepath = markers.map(marker => marker.getPosition());
+            polyline = new kakao.maps.Polyline({
+                path: markers.map(marker => marker.getPosition()),
+                strokeWeight: 5,
+                strokeColor: "#444444",
+                strokeOpacity: 0.7,
+                strokeStyle: "solid"
+            });
+            polyline.setMap(map);
+        };
+
+        /*
+        kakao.maps.event.addListener(map, "click", (e) => {
+            const marker = new kakao.maps.Marker({
+                position: e.latLng,
+                draggable: false,
+                clickable: false,
+                map
+            });
+            markers.push(marker);
+            drawPolyline();
+        });
+        */
+
+        function clearTable() {
+            const tbody = document.querySelector("table.table > tbody");
+            tbody.innerHTML = "";
+        }
+
+        function addTableItem(item) {
+            const tr = document.createElement("tr");
+            let td = document.createElement("td");
+            //td.className = "text-center";
+            td.innerText = `${item.id}`;
+            tr.appendChild(td);
+            td = document.createElement("td");
+            td.innerText = item.waypoints && item.waypoints[0].latitude;
+            tr.appendChild(td);
+            td = document.createElement("td");
+            td.className = "td-actions text-right";
+            td.innerHTML = `
+                <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
+                    <i class="fa fa-times"></i>
+                </button>
+            `;
+            tr.appendChild(td);
+            tr.addEventListener("click", (e) => {
+                markers.forEach((marker) => marker.setMap(null));
+                markers.clear();
+
+                item.waypoints.forEach((waypoint, index) => {
+                    const marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(waypoint.latitude, waypoint.longitude),
+                        draggable: false,
+                        clickable: false,
+                        image: new kakao.maps.MarkerImage(
+                            `${window.location.origin}/static/img/numbers/0${index+1}.png`,
+                            new kakao.maps.Size(32, 32),
+                            {
+                                offset: new kakao.maps.Point(16, 16)
+                            }
+                        ),
+                        map
+                    });
+                    markers.push(marker);
+                });
+
+                drawPolyline();
+
+                if (item.waypoints.length > 0) {
+                    const center = item.waypoints.reduce((previousValue, currentValue) => {
+                        return {
+                            latitude: previousValue.latitude + currentValue.latitude,
+                            longitude: previousValue.longitude + currentValue.longitude
+                        };
+                    });
+
+                    map.setLevel(6);
+                    map.panTo(new kakao.maps.LatLng(
+                        center.latitude / markers.length,
+                        center.longitude / markers.length));
+                }
+            });
+
+            const tbody = document.querySelector("table.table > tbody");
+            tbody.appendChild(tr);
+        }
+
+        // Fetch missions
+        function fetchMissions() {
+            fetch(`${window.location.origin}/api/mission`)
+                .then((response) => response.json())
+                .then((response) => {
+                    console.log(response);
+                    response.items.forEach(addTableItem);
+                })
+                .catch(console.error);
+        }
+
+        fetchMissions();
+
+        /*
+        document.getElementById("btn-refresh").addEventListener("click", fetchWarehouses);
+        */
+    </script>
+
+    <!--   Core JS Files   -->
+	<script src="{{ url_for('static', path='/js/jquery.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', path='/js/bootstrap.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url_for('static', path='/js/material.min.js') }}" type="text/javascript"></script>
+
+	<!-- Control Center for Material Kit: activating the ripples, parallax effects, scripts from the example pages etc -->
+	<script src="{{ url_for('static', path='/js/material-kit.js') }}" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        document.getElementById("year").innerText = new Date().getFullYear().toString();
+    </script>
+</html>

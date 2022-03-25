@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from src.fleet_beacon.waypoint.models import Waypoint
-from src.fleet_beacon.waypoint.schemas import WaypointCreate, WaypointUpdate
+from src.fleet_beacon.waypoint.models import WaypointCreate, WaypointUpdate
 
 KST = timezone(timedelta(hours=9))
 
@@ -23,7 +23,7 @@ async def get(*, db_session: Session, waypoint_id: int) -> Optional[Waypoint]:
 
 
 async def get_by_mission(*, db_session: Session, mission_id: int) -> List[Waypoint]:
-    return db_session.query(Waypoint).filter(Waypoint.mission == mission_id).all()
+    return db_session.query(Waypoint).filter(Waypoint.mission_id == mission_id).all()
 
 
 async def update(*, db_session: Session, waypoint: Waypoint, waypoint_in: WaypointUpdate) -> Waypoint:

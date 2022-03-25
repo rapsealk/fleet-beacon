@@ -1,21 +1,34 @@
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.mission.models import Mission
-from src.fleet_beacon.mission.schemas import MissionCreate, MissionUpdate
+from src.fleet_beacon.mission.models import Mission, MissionCreate, MissionRead, MissionList, MissionUpdate
+from src.fleet_beacon.waypoint.service import create as create_waypoint
 
 KST = timezone(timedelta(hours=9))
 
 
 async def create(*, db_session: Session, mission_in: MissionCreate) -> Mission:
-    mission = Mission(**mission_in.dict())
-
+    mission = Mission()
     db_session.add(mission)
     db_session.commit()
 
-    return mission
+    waypoints = []
+    for waypoint in mission_in.waypoints:
+        waypoint.mission_id = mission.id
+        print(f"Waypoint to be created: {waypoint}")
+        waypoints.append(await create_waypoint(db_session=db_session, waypoint_in=waypoint))
+
+    return MissionRead(id=mission.id, waypoints=[])
+
+
+async def get_all(*, db_session: Session) -> MissionList:
+    missions = db_session.query(Mission).all()
+    return MissionList(total=len(missions), items=missions)
+
+
+async def assign_mission(*, db_session: Session, mission_in: MissionCreate) -> Mission:
+    pass
 
 
 """

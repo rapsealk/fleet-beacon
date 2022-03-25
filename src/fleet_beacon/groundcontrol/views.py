@@ -46,7 +46,15 @@ def get_fleet_view(request: Request, db_session: Session = Depends(get_db)):
 
 @router.get("/mission", response_class=HTMLResponse)
 def get_mission_view(request: Request, db_session: Session = Depends(get_db)):
-    return templates.TemplateResponse("index.html", context={
+    return templates.TemplateResponse("mission.html", context={
+        "request": request,
+        "kakao_map_app_key": KAKAO_MAP_APP_KEY
+    })
+
+
+@router.get("/mission/new", response_class=HTMLResponse)
+def get_mission_new_view(request: Request):
+    return templates.TemplateResponse("mission_new.html", context={
         "request": request,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY
     })

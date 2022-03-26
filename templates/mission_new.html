@@ -47,10 +47,28 @@
 		<div class="header header-filter" style="background-image: url({{ url_for('static', path='/img/venezia.jpg') }}); background-size: cover; background-position: top center;">
 			<div class="container" id="main-container">
 				<div class="row">
-					<div class="col-md-12">
+					<div class="col-md-9">
 						<div class="card card-signup">
                             <div id="map" style="width:100%;height:600px;"></div>
 						</div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-signup">
+                            <table class="table" style="height: 580px; display: block;">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-2 text-center">#</th>
+                                        <th class="col-md-4 text-center">Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center">1</td>
+                                        <td class="text-center">Andrew Mike</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 				</div>
                 <div class="row">
@@ -160,6 +178,41 @@
                 })
                 .catch(console.error);
         });
+
+        // Fetch warehouses.
+        let warehouseMarker = null;
+        (function() {
+            fetch(`${window.location.origin}/api/warehouse`)
+                .then((response) => response.json())
+                .then((response) => {
+                    const tbody = document.querySelector("table.table > tbody");
+                    tbody.innerHTML = "";
+                    response.items.forEach((item, _) => {
+                        const tr = document.createElement("tr");
+                        let td = document.createElement("td");
+                        td.className = "text-center";
+                        td.innerText = `${item.id}`;
+                        tr.appendChild(td);
+                        td = document.createElement("td");
+                        td.innerText = item.name;
+                        tr.appendChild(td);
+                        tr.addEventListener("click", (e) => {
+                            warehouseMarker?.setMap(null);
+                            const warehousePosition = new kakao.maps.LatLng(item.latitude, item.longitude);
+                            map.setLevel(4);
+                            map.panTo(warehousePosition);
+                            warehouseMarker = new kakao.maps.Marker({
+                                position: warehousePosition,
+                                clickable: false,
+                                draggable: false,
+                                map
+                            });
+                        });
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(console.error);
+        })();
     </script>
 
     <!--   Core JS Files   -->

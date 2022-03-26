@@ -66,13 +66,12 @@
                     <!-- Table -->
                     <div class="col-md-4">
                         <div class="card card-signup">
-                            <table class="table" style="height: 580px;">
+                            <table class="table" style="height: 580px; display: block;">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">#</th>
-                                        <th>Name</th>
-                                        <th class="text-right">Actions</th>
-                                        <th class="text-center">
+                                        <th class="col-md-2 text-center">#</th>
+                                        <th class="col-md-4 text-center">Name</th>
+                                        <th class="col-md-2 text-center">
                                             <button type="button" id="btn-refresh" rel="tooltip" title="Refresh" class="btn btn-info btn-simple btn-xs">
                                                 <i class="fa fa-refresh"></i>
                                             </button>
@@ -185,19 +184,11 @@
                     response.items.forEach((item, _) => {
                         const tr = document.createElement("tr");
                         let td = document.createElement("td");
-                        //td.className = "text-center";
                         td.innerText = `${item.id}`;
+                        td.className = "text-center";
                         tr.appendChild(td);
                         td = document.createElement("td");
                         td.innerText = item.name;
-                        tr.appendChild(td);
-                        td = document.createElement("td");
-                        td.className = "td-actions text-right";
-                        td.innerHTML = `
-                            <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                <i class="fa fa-times"></i>
-                            </button>
-                        `;
                         tr.appendChild(td);
                         tr.addEventListener("click", (e) => {
                             warehouseMarker?.setMap(null);

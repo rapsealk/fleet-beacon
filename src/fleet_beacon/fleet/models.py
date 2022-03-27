@@ -1,30 +1,42 @@
+from typing import List, Optional
+
 from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 
 from src.fleet_beacon.database import Base
 from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
-from src.fleet_beacon.mission.models import Mission
-from src.fleet_beacon.warehouse.models import Warehouse
+from src.fleet_beacon.unit.models import UnitRead
 
 
 class Fleet(Base, TimeStampMixin):
     id = Column(Integer, primary_key=True)
-    warehouse = Column(Integer, ForeignKey(Warehouse.id, ondelete="CASCADE"), nullable=False)
-    mission = Column(Integer, ForeignKey(Mission.id, ondelete="SET NULL"), nullable=True)
+    warehouse_id = Column(Integer, ForeignKey("warehouse.id", ondelete="CASCADE"), nullable=False)
+    mission_id = Column(Integer, ForeignKey("mission.id", ondelete="SET NULL"), nullable=True)
+    units = relationship("Unit")
 
 
 # Pydantic models...
 class FleetBase(FleetBeaconBase):
-    warehouse: PrimaryKey
+    pass
 
 
 class FleetCreate(FleetBase):
-    pass
+    warehouse_id: PrimaryKey
+    unit_ids: List[int]
 
 
 class FleetRead(FleetBase):
     id: PrimaryKey
-    mission: PrimaryKey
+    warehouse_id: PrimaryKey
+    mission_id: Optional[PrimaryKey] = None
+    units: List[UnitRead] = []
+
+
+class FleetList(FleetBase):
+    total: int = 0
+    items: List[FleetRead] = []
 
 
 class FleetUpdate(FleetBase):
-    mission: PrimaryKey
+    warehouse_id: Optional[PrimaryKey] = None
+    mission_id: Optional[PrimaryKey] = None

@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import List, Optional
 
 from sqlalchemy import Column, Boolean, Float, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 from src.fleet_beacon.database import Base
 from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
 from src.fleet_beacon.unit.enums import PX4Mode
-from src.fleet_beacon.fleet.models import Fleet
-from src.fleet_beacon.warehouse.models import Warehouse, WarehouseRead
+from src.fleet_beacon.warehouse.models import WarehouseRead
 
 
 class Unit(Base, TimeStampMixin):
@@ -22,22 +22,25 @@ class Unit(Base, TimeStampMixin):
     longitude = Column(Float, default=0.0)
     altitude = Column(Float, default=0.0)
     yaw = Column(Float, default=0.0)
-    fleet = Column(Integer, ForeignKey(Fleet.id), nullable=True)
-    warehouse = Column(Integer, ForeignKey(Warehouse.id), nullable=False)
+    fleet_id = Column(Integer, ForeignKey("fleet.id"), nullable=True)
+    warehouse_id = Column(Integer, ForeignKey("warehouse.id"), nullable=False)
+    fleet = relationship("Fleet", back_populates="units")
+    warehouse = relationship("Warehouse", back_populates="units")
 
 
 # Pydantic models...
 class UnitBase(FleetBeaconBase):
-    uuid: str
-    warehouse: int
+    pass
 
 
 class UnitCreate(UnitBase):
-    pass
+    uuid: str
+    warehouse_id: int
 
 
 class UnitRead(UnitBase):
     id: PrimaryKey
+    uuid: str
     connected: bool = False
     armed: bool = False
     guided: bool = False
@@ -47,7 +50,8 @@ class UnitRead(UnitBase):
     longitude: float
     altitude: float
     yaw: float
-    fleet: Optional[int] = None
+    fleet_id: Optional[int] = None
+    warehouse_id: int
     created_at: datetime
     updated_at: datetime
 
@@ -58,18 +62,18 @@ class UnitList(FleetBeaconBase):
 
 
 class UnitWarehouseDetail(WarehouseRead):
-    robots: UnitList
+    units: UnitList
 
 
 class UnitUpdate(UnitBase):
-    id: PrimaryKey
     connected: bool = False
     armed: bool = False
     guided: bool = False
     mode: str = str(PX4Mode.offboard)
     system_status: int = 0
-    latitude: float
-    longitude: float
-    altitude: float
-    yaw: float
-    fleet: Optional[int] = None
+    latitude: float = 0
+    longitude: float = 0
+    altitude: float = 0
+    yaw: float = 0
+    fleet_id: Optional[int] = None
+    warehouse_id: Optional[int] = None

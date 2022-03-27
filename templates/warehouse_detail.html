@@ -65,30 +65,21 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center">#</th>
-                                        <th>Name</th>
-                                        <th>Fleet</th>
-                                        <th class="text-right">Actions</th>
-                                        <th class="text-center">
+                                        <th class="text-center">Name</th>
+                                        <th class="text-center">Fleet</th>
+                                        <th class="col-md-2 text-center">
                                             <button type="button" id="btn-refresh" rel="tooltip" title="Refresh" class="btn btn-info btn-simple btn-xs">
                                                 <i class="fa fa-refresh"></i>
                                             </button>
+                                            <a href="/warehouse/{{ warehouse_id }}/fleet/new" type="button" rel="tooltip" title="Add" class="btn btn-info btn-xs">
+                                                <i class="fa fa-plus"></i>
+                                            </a>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
-                        <!--
-                        <div class="card card-signup" style="margin-top: -24pt;">
-                            <div class="col-sm-9"></div>
-                            <div class="col-sm-3">
-                                <div class="form-group label-floating">
-                                    <label class="control-label">UUID</label>
-                                    <input type="email" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        -->
                     </div>
 				</div>
             </div>
@@ -122,22 +113,16 @@
                     response.units.items.forEach((item, _) => {
                         const tr = document.createElement("tr");
                         let td = document.createElement("td");
-                        //td.className = "text-center";
+                        td.className = "text-center";
                         td.innerText = `${item.id}`;
                         tr.appendChild(td);
                         td = document.createElement("td");
+                        td.className = "text-center";
                         td.innerText = item.uuid;
                         tr.appendChild(td);
                         td = document.createElement("td");
-                        td.innerText = `${item.fleet || "-"}`;
-                        tr.appendChild(td);
-                        td = document.createElement("td");
-                        td.className = "td-actions text-right";
-                        td.innerHTML = `
-                            <button type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs">
-                                <i class="fa fa-times"></i>
-                            </button>
-                        `;
+                        td.className = "text-center";
+                        td.innerText = `${item.fleet_id || "-"}`;
                         tr.appendChild(td);
                         tbody.appendChild(tr);
                     });
@@ -146,6 +131,8 @@
         }
 
         fetchUnitsInWarehouse();
+
+        document.getElementById("btn-refresh").addEventListener("click", fetchUnitsInWarehouse);
     </script>
 
     <!--   Core JS Files   -->

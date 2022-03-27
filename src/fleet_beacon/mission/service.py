@@ -2,7 +2,9 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.mission.models import Mission, MissionCreate, MissionRead, MissionList, MissionUpdate
+from src.fleet_beacon.models import PrimaryKey
+from src.fleet_beacon.mission.models import Mission, MissionCreate, MissionRead, MissionList
+from src.fleet_beacon.warehouse.models import WarehouseList
 from src.fleet_beacon.waypoint.service import create as create_waypoint
 
 KST = timezone(timedelta(hours=9))
@@ -27,8 +29,24 @@ async def get_all(*, db_session: Session) -> MissionList:
     return MissionList(total=len(missions), items=missions)
 
 
+async def get(*, db_session: Session, mission_id: PrimaryKey) -> Mission:
+    return db_session.query(Mission).filter(Mission.id == mission_id).first()
+
+
 async def assign_mission(*, db_session: Session, mission_in: MissionCreate) -> Mission:
     pass
+
+
+"""
+async def find_near_warehouses(*, db_session: Session, mission_id: PrimaryKey) -> WarehouseList:
+    if not (mission := await get(db_session=db_session, mission_id=mission_id)):
+        return WarehouseList(total=0, items=[])
+    if not mission.waypoints:
+        return WarehouseList(total=0, items=[])
+    warehouses = await filter_by_distance(
+        db_session=db_session, latitude=mission.waypoints[0].latitude, longitude=mission.waypoints[0].longitude, distance_km=3)
+    return WarehouseList(total=len(warehouses), items=warehouses)
+"""
 
 
 """

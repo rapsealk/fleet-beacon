@@ -175,7 +175,7 @@
             })
                 .then((response) => response.json())
                 .then((response) => {
-                    console.log("response:", JSON.stringify(response));
+                    window.location.href = `${window.location.origin}/fleet`;
                 })
                 .catch(console.error);
         });

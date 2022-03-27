@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.fleet_beacon.database import get_db
 from src.fleet_beacon.models import PrimaryKey
 from src.fleet_beacon.fleet.models import FleetCreate, FleetRead, FleetList
-from src.fleet_beacon.fleet.service import create, get, get_all
+from src.fleet_beacon.fleet.service import create, get, get_all, assign_mission
 
 router = APIRouter()
 
@@ -26,6 +26,23 @@ async def get_fleet(*, db_session: Session = Depends(get_db), fleet_id: PrimaryK
 async def get_fleets(*, db_session: Session = Depends(get_db)):
     fleets = await get_all(db_session=db_session)
     return FleetList(total=len(fleets), items=fleets)
+
+
+@router.put("/{fleet_id}/mission/{mission_id}", response_model=FleetRead)
+async def assign_mission_to_fleet(
+    background_tasks: BackgroundTasks,
+    *,
+    fleet_id: PrimaryKey,
+    mission_id: PrimaryKey,
+    db_session: Session = Depends(get_db)
+):
+    # TODO: background_tasks
+    if not (fleet := await assign_mission(db_session=db_session, fleet_id=fleet_id, mission_id=mission_id)):
+        raise HTTPException(
+            status_cide=status.HTTP_404_NOT_FOUND,
+            detail=[{"msg": f"The fleet with this id({fleet_id}) does not exists."}]
+        )
+    return fleet
 
 
 """

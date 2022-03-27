@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 
 from src.fleet_beacon.models import PrimaryKey
 from src.fleet_beacon.mission.models import Mission, MissionCreate, MissionRead, MissionList
-from src.fleet_beacon.warehouse.models import WarehouseList
 from src.fleet_beacon.waypoint.service import create as create_waypoint
 
 KST = timezone(timedelta(hours=9))
@@ -31,10 +30,6 @@ async def get_all(*, db_session: Session) -> MissionList:
 
 async def get(*, db_session: Session, mission_id: PrimaryKey) -> Mission:
     return db_session.query(Mission).filter(Mission.id == mission_id).first()
-
-
-async def assign_mission(*, db_session: Session, mission_in: MissionCreate) -> Mission:
-    pass
 
 
 """

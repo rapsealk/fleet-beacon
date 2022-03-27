@@ -75,6 +75,7 @@ async def get_mission_assignment_view(request: Request, mission_id: PrimaryKey, 
     return templates.TemplateResponse("mission_assignment.html", context={
         "request": request,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "mission_id": mission_id,
         "waypoints": mission.waypoints,
         "enumerate": enumerate,
         "len": len

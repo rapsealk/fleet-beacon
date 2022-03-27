@@ -8,6 +8,8 @@ from src.fleet_beacon.database import get_db
 from src.fleet_beacon.models import PrimaryKey
 from src.fleet_beacon.warehouse.models import WarehouseCreate, WarehouseRead, WarehouseList, WarehouseUpdate
 from src.fleet_beacon.warehouse.service import create, delete, get, get_all, get_detail, update
+from src.fleet_beacon.fleet.models import FleetList
+from src.fleet_beacon.fleet.service import find_fleets_in_warehouse
 from src.fleet_beacon.unit.models import UnitWarehouseDetail
 
 router = APIRouter()
@@ -36,6 +38,12 @@ async def get_warehouse_detail(*, warehouse_id: PrimaryKey, db_session: Session 
         status_code=status.HTTP_404_NOT_FOUND,
         detail=[{"msg": f"The warehouse with this id({warehouse_id}) does not exists."}]
     )
+
+
+@router.get("/{warehouse_id}/fleets", response_model=FleetList)
+async def get_warehouse_fleets(*, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
+    fleets = await find_fleets_in_warehouse(db_session=db_session, warehouse_id=warehouse_id)
+    return FleetList(total=len(fleets), items=fleets)
 
 
 @router.get("", response_model=WarehouseList)

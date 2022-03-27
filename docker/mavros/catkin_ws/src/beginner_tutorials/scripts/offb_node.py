@@ -68,6 +68,7 @@ def main():
     rospy.wait_for_service("mavros/cmd/arming")
     try:
         arming_client = rospy.ServiceProxy("mavros/cmd/arming", CommandBool)
+        rospy.loginfo("Service found: mavros/cmd/arming")
     except rospy.ServiceException as e:
         rospy.logerr(e)
         sys.exit(1)
@@ -77,6 +78,7 @@ def main():
     rospy.wait_for_service("mavros/set_mode")
     try:
         set_mode_client = rospy.ServiceProxy("mavros/set_mode", SetMode)
+        rospy.loginfo("Service found: mavros/set_mode")
     except rospy.ServiceException as e:
         rospy.logerr(e)
         sys.exit(1)
@@ -102,7 +104,7 @@ def main():
     nav_sat_fix.altitude = config["global_position"].get("altitude", 0)
 
     # HTTP Request
-    response = requests.post(f"{base_url}/robot", json={key: config[key] for key in ["uuid", "warehouse"]})
+    response = requests.post(f"{base_url}/api/unit", json={key: config[key] for key in ["uuid", "warehouse"]})
     if response.status_code == requests.codes.created:
         pass    # print(f"[POST /robot] {response.content()}")
     else:
@@ -111,6 +113,7 @@ def main():
     # Heartbeat
     process = multiprocessing.Process(target=send_heartbeat, args=("host.docker.internal", 6379), daemon=True)
     process.start()
+    rospy.loginfo(f"Hearbeat process: {process}")
 
     rate = rospy.Rate(20.0)
 

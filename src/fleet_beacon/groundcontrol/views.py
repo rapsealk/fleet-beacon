@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from src.fleet_beacon.config import KAKAO_MAP_APP_KEY
 from src.fleet_beacon.database import get_db
 from src.fleet_beacon.models import PrimaryKey
+from src.fleet_beacon.mission.service import get as get_mission
 
 router = APIRouter()
 
@@ -36,6 +37,14 @@ def get_warehouse_detail_view(request: Request, warehouse_id: PrimaryKey, db_ses
     })
 
 
+@router.get("/warehouse/{warehouse_id}/fleet/new", response_class=HTMLResponse)
+def get_fleet_new_view(request: Request, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
+    return templates.TemplateResponse("fleet_new.html", context={
+        "request": request,
+        "warehouse_id": warehouse_id
+    })
+
+
 @router.get("/fleet", response_class=HTMLResponse)
 def get_fleet_view(request: Request, db_session: Session = Depends(get_db)):
     return templates.TemplateResponse("fleet.html", context={
@@ -57,6 +66,18 @@ def get_mission_new_view(request: Request):
     return templates.TemplateResponse("mission_new.html", context={
         "request": request,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY
+    })
+
+
+@router.get("/mission/assignment/{mission_id}")
+async def get_mission_assignment_view(request: Request, mission_id: PrimaryKey, db_session: Session = Depends(get_db)):
+    mission = await get_mission(db_session=db_session, mission_id=mission_id)
+    return templates.TemplateResponse("mission_assignment.html", context={
+        "request": request,
+        "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "waypoints": mission.waypoints,
+        "enumerate": enumerate,
+        "len": len
     })
 
 

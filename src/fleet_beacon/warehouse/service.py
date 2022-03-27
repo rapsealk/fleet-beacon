@@ -4,8 +4,10 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from src.fleet_beacon.warehouse.models import Warehouse, WarehouseCreate, WarehouseUpdate
+from src.fleet_beacon.mission.service import get as get_mission
 from src.fleet_beacon.unit.models import UnitWarehouseDetail
 from src.fleet_beacon.unit.service import get_by_warehouse
+from src.fleet_beacon.utils.geometry import LatLng, get_haversine_distance
 
 KST = timezone(timedelta(hours=9))
 
@@ -33,11 +35,52 @@ async def get_all(*, db_session: Session) -> List[Warehouse]:
 
 async def get_detail(*, db_session: Session, warehouse_id: int) -> Optional[UnitWarehouseDetail]:
     if warehouse := db_session.query(Warehouse).filter(Warehouse.id == warehouse_id).first():
-        robots = await get_by_warehouse(db_session=db_session, warehouse_id=warehouse_id)
-        print(f'[Warehouse::get_detail] robots={robots}')
-        return UnitWarehouseDetail(**warehouse.dict(), robots=robots)
+        units = await get_by_warehouse(db_session=db_session, warehouse_id=warehouse_id)
+        return UnitWarehouseDetail(**warehouse.dict(), units=units)
     else:
         return None
+
+
+async def find_nearby_warehouses(
+    *,
+    db_session: Session,
+    mission_id: Optional[int] = None,
+    distance_km: float = 3.0
+) -> List[Warehouse]:
+    warehouses = db_session.query(Warehouse).all()
+    if mission_id and (mission := await get_mission(db_session=db_session, mission_id=mission_id)):
+        latitude, longitude = (mission.waypoints[0].latitude, mission.waypoints[0].longitude)
+        warehouses = list(filter(lambda x: get_haversine_distance(
+            LatLng(latitude, longitude), LatLng(x.latitude, x.longitude)) <= distance_km, warehouses))
+        warehouses.sort(key=lambda x: get_haversine_distance(LatLng(latitude, longitude), LatLng(x.latitude, x.longitude)))
+    return warehouses
+
+
+"""
+async def get_all_nearby(*, db_session: Session, mission_id: Optional[int] = None, distance_km: float = 3.0) -> List[Warehouse]:
+    warehouses = db_session.query(Warehouse).all()
+    if mission_id and (mission := await get_mission(db_session=db_session, mission_id=mission_id)):
+        latitude, longitude = (mission.waypoints[0].latitude, mission.waypoints[0].longitude)
+        warehouses = list(filter(lambda x: get_haversine_distance(
+            LatLng(latitude, longitude), LatLng(x.latitude, x.longitude)) <= distance_km, warehouses))
+    return warehouses
+"""
+
+
+"""
+async def filter_by_distance(
+    *,
+    db_session: Session,
+    latitude: float,
+    longitude: float,
+    distance_km: float = 3
+) -> WarehouseList:
+    # TODO: MySQL Spatial Convenience Functions (https://dev.mysql.com/doc/refman/5.7/en/spatial-convenience-functions.html)
+    warehouses = db_session.query(Warehouse).all()
+    warehouses = list(filter(lambda x: get_haversine_distance(
+        LatLng(latitude, longitude), LatLng(x.latitude, x.longitude)) <= distance_km, warehouses))
+    return WarehouseList(total=len(warehouses), items=warehouses)
+"""
 
 
 async def update(*, db_session: Session, warehouse: Warehouse, warehouse_in: WarehouseUpdate) -> Warehouse:

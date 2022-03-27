@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -26,7 +28,9 @@ async def get_warehouse(*, db_session: Session = Depends(get_db), warehouse_id: 
 
 @router.get("/{warehouse_id}/detail", response_model=UnitWarehouseDetail)
 async def get_warehouse_detail(*, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
+    print(f"[GET /api/warehouse/{warehouse_id}/detail]")
     if warehouse := await get_detail(db_session=db_session, warehouse_id=warehouse_id):
+        print(f"[GET /api/warehouse/{warehouse_id}/detail] warehouse={warehouse}")
         return warehouse
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -38,6 +42,14 @@ async def get_warehouse_detail(*, warehouse_id: PrimaryKey, db_session: Session 
 async def get_warehouses(*, db_session: Session = Depends(get_db)):
     warehouses = await get_all(db_session=db_session)
     return WarehouseList(total=len(warehouses), items=warehouses)
+
+
+"""
+@router.get("/nearby", response_model=WarehouseList)
+async def get_warehouses_near(*, mission: Optional[int] = None, db_session: Session = Depends(get_db)):
+    warehouses = await get_all_nearby(db_session=db_session, mission_id=mission, distance_km=3.0)
+    return WarehouseList(total=len(warehouses), items=warehouses)
+"""
 
 
 @router.put("/{warehouse_id}", response_model=WarehouseRead)

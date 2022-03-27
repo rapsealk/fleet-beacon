@@ -4,11 +4,10 @@ from sqlalchemy.orm import Session
 
 from src.fleet_beacon.database import get_db
 from src.fleet_beacon.models import PrimaryKey
-# from src.fleet_beacon.warehouse.models import WarehouseCreate, WarehouseRead, WarehouseList, WarehouseUpdate
-# from src.fleet_beacon.warehouse.service import create, delete, get, get_all, get_detail, update
-# from src.fleet_beacon.robot.models import RobotWarehouseDetail
 from src.fleet_beacon.mission.models import MissionCreate, MissionRead, MissionList
 from src.fleet_beacon.mission.service import create, get_all
+from src.fleet_beacon.warehouse.models import WarehouseList
+from src.fleet_beacon.warehouse.service import find_nearby_warehouses
 
 router = APIRouter()
 
@@ -22,6 +21,15 @@ async def create_warehouse(*, db_session: Session = Depends(get_db), mission_in:
 @router.get("", response_model=MissionList)
 async def get_missions(*, db_session: Session = Depends(get_db)):
     return await get_all(db_session=db_session)
+
+
+@router.get("/{mission_id}/nearby/warehouse", response_model=WarehouseList)
+async def get_nearby_warehouses(*, mission_id: PrimaryKey, db_session: Session = Depends(get_db)):
+    warehouses = await find_nearby_warehouses(db_session=db_session, mission_id=mission_id, distance_km=3.0)
+    return WarehouseList(total=len(warehouses), items=warehouses)
+
+
+#@router.get("/{mission_id}/nearby/fleet", response_model=)
 
 
 """

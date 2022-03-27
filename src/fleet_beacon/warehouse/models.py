@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.dialects.mysql import FLOAT
+from sqlalchemy.orm import relationship
 
 from src.fleet_beacon.database import Base
 from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
@@ -13,6 +14,8 @@ class Warehouse(Base, TimeStampMixin):
     name = Column(String(16))
     latitude = Column(FLOAT(precision=32), nullable=False)
     longitude = Column(FLOAT(precision=32), nullable=False)
+    units = relationship("Unit")
+    fleets = relationship("Fleet")
 
 
 # Pydantic models...

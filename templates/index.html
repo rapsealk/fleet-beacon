@@ -49,21 +49,8 @@
 				<div class="row">
 					<div class="col-md-12">
 						<div class="card card-signup">
-                            <!--
-							<form class="form" action="#!">
-								<div class="header header-info text-center">
-									<h4>Problem pid</h4>
-								</div>
-								<div class="content">
-                                </div>
-							</form>
-                            -->
                             <div id="map" style="width:100%;height:600px;"></div>
 						</div>
-                    
-                        <!-- alert -->
-                        <div id="alert-zone"></div>
-                    
                     </div>
 				</div>
             </div>
@@ -96,7 +83,7 @@
             center: new kakao.maps.LatLng(37.5667791508359, 126.97864095263),
             level: 3
         };
-        const map = new kakao.maps.Map(container, options);
+        const map = globalThis.map = new kakao.maps.Map(container, options);
         const markers = [];
         let polyline = null;
 
@@ -142,6 +129,22 @@
                 infoWindow.open(map, marker);
             });
         });
+    </script>
+    <!-- WebSocket -->
+    <script type="text/javascript">
+        const unitMarkers = {};
+        const ws = new WebSocket(`ws://${window.location.host}/ws`);
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const { uuid } = data;
+            const { latitude, longitude } = data.global_position;
+            unitMarkers[uuid] = unitMarkers[uuid] || new kakao.maps.Marker({
+                draggable: false,
+                clickable: false,
+                map: globalThis.map
+            });
+            unitMarkers[uuid].setPosition(new kakao.maps.LatLng(latitude, longitude));
+        };
     </script>
 
     <!--   Core JS Files   -->

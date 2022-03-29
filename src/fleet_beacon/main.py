@@ -12,6 +12,7 @@ from src.fleet_beacon import config
 from src.fleet_beacon.api import router as api_router
 from src.fleet_beacon.view import router as view_router
 from src.fleet_beacon.database import Database
+from src.fleet_beacon.websocket import add_websocket_redis_bridge
 
 REQUEST_ID_CTX_KEY: Final[str] = "request_id"
 _request_id_ctx_var: ContextVar[Optional[str]] = ContextVar(REQUEST_ID_CTX_KEY, default=None)
@@ -54,6 +55,8 @@ def create_app() -> FastAPI:
     app.include_router(view_router)
 
     app.mount("/static", StaticFiles(directory="static"), name="static")
+
+    app = add_websocket_redis_bridge(app, topics=["global_position"])
 
     return app
 

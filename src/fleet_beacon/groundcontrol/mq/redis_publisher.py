@@ -1,7 +1,11 @@
 import argparse
-from datetime import datetime
+import json
+import random
+import time
 
 import redis
+
+UUID = "6f62b1c5-833e-41c8-b7ca-bd632766a9dc"
 
 
 def parse_args():
@@ -16,8 +20,20 @@ def main():
     args = parse_args()
 
     r = redis.Redis(host=args.host, port=args.port)
-    message = f"[{datetime.now().isoformat()}] hello"
-    r.publish(channel=args.channel, message=message)
+
+    while True:
+        message = {
+            "timestamp": int(time.time() * 1000),
+            "uuid": UUID,
+            "global_position": {
+                "latitude": 37.60283752264964 + random.random() / 10,
+                "longitude": 126.86838656169049 + random.random() / 10,
+                "altitude": 0
+            }
+        }
+        r.publish(channel=args.channel, message=json.dumps(message))
+        print(f"[Redis] Message published: {message}")
+        time.sleep(3)
 
 
 if __name__ == "__main__":

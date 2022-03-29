@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.fleet_beacon.groundcontrol.views import router as groundcontrol_router
+from fleet_beacon.groundcontrol.views import router as groundcontrol_router
 
 router = APIRouter()
 

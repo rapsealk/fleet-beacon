@@ -2,11 +2,11 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.models import PrimaryKey
-from src.fleet_beacon.fleet.models import Fleet, FleetCreate
-from src.fleet_beacon.unit.models import Unit, UnitUpdate
-from src.fleet_beacon.unit.service import get as get_unit
-from src.fleet_beacon.unit.service import update as update_unit
+from fleet_beacon.models import PrimaryKey
+from fleet_beacon.fleet.models import Fleet, FleetCreate
+from fleet_beacon.unit.models import Unit, UnitUpdate
+from fleet_beacon.unit.service import get as get_unit
+from fleet_beacon.unit.service import update as update_unit
 
 
 async def get(*, db_session, fleet_id: int) -> Optional[Fleet]:

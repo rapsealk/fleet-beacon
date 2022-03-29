@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.waypoint.models import Waypoint
-from src.fleet_beacon.waypoint.models import WaypointCreate, WaypointUpdate
+from fleet_beacon.waypoint.models import Waypoint
+from fleet_beacon.waypoint.models import WaypointCreate, WaypointUpdate
 
 KST = timezone(timedelta(hours=9))
 

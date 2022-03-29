@@ -1,4 +1,4 @@
-from src.fleet_beacon.enums import FleetBeaconEnum
+from fleet_beacon.enums import FleetBeaconEnum
 
 
 class MissionStatus(FleetBeaconEnum):

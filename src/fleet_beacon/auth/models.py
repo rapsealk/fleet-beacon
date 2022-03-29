@@ -4,8 +4,8 @@ import secrets
 import bcrypt
 from sqlalchemy import Column, Integer, String, LargeBinary
 
-from src.fleet_beacon.database import Base
-from src.fleet_beacon.models import TimeStampMixin
+from fleet_beacon.database import Base
+from fleet_beacon.models import TimeStampMixin
 
 
 def generate_password():

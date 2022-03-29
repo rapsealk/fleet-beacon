@@ -2,10 +2,10 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.database import get_db
-from src.fleet_beacon.models import PrimaryKey
-from src.fleet_beacon.fleet.models import FleetCreate, FleetRead, FleetList
-from src.fleet_beacon.fleet.service import create, get, get_all, assign_mission
+from fleet_beacon.database import get_db
+from fleet_beacon.models import PrimaryKey
+from fleet_beacon.fleet.models import FleetCreate, FleetRead, FleetList
+from fleet_beacon.fleet.service import create, get, get_all, assign_mission
 
 router = APIRouter()
 
@@ -36,7 +36,22 @@ async def assign_mission_to_fleet(
     mission_id: PrimaryKey,
     db_session: Session = Depends(get_db)
 ):
+    """특정 `Fleet`에 `Mission`을 할당합니다.
+
+    Args:
+        :param :py:class:`fastapi.BackgroundTasks` background_tasks: ...
+        :param int fleet_id: ...
+        :param int mission_id: ...
+        :param :py:class:`sqlalchemy.orm.Session` db_session: ...
+
+    Returns:
+        :returns: :py:class:`fleet_beacon.fleet.models.FleetRead`
+    """
     # TODO: background_tasks
+    """
+    background_tasks.add_task(publish_container_job, routing_key=machine.name, session=session.name, session_id=session.id,
+                            artifact=artifact.object_name, devices=[device.uuid], dataset=dataset.object_name)
+    """
     if not (fleet := await assign_mission(db_session=db_session, fleet_id=fleet_id, mission_id=mission_id)):
         raise HTTPException(
             status_cide=status.HTTP_404_NOT_FOUND,

@@ -76,12 +76,12 @@ class Database:
         """
 
     def init_database(self):
-        from src.fleet_beacon.auth.models import FleetBeaconUser    # noqa: F401
-        from src.fleet_beacon.fleet.models import Fleet             # noqa: F401
-        from src.fleet_beacon.mission.models import Mission         # noqa: F401
-        from src.fleet_beacon.unit.models import Unit               # noqa: F401
-        from src.fleet_beacon.warehouse.models import Warehouse     # noqa: F401
-        from src.fleet_beacon.waypoint.models import Waypoint       # noqa: F401
+        from fleet_beacon.auth.models import FleetBeaconUser    # noqa: F401
+        from fleet_beacon.fleet.models import Fleet             # noqa: F401
+        from fleet_beacon.mission.models import Mission         # noqa: F401
+        from fleet_beacon.unit.models import Unit               # noqa: F401
+        from fleet_beacon.warehouse.models import Warehouse     # noqa: F401
+        from fleet_beacon.waypoint.models import Waypoint       # noqa: F401
 
         Base.metadata.create_all(self.engine)
 

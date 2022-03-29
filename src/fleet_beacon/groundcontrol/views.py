@@ -3,10 +3,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.config import KAKAO_MAP_APP_KEY
-from src.fleet_beacon.database import get_db
-from src.fleet_beacon.models import PrimaryKey
-from src.fleet_beacon.mission.service import get as get_mission
+from fleet_beacon.config import KAKAO_MAP_APP_KEY
+from fleet_beacon.database import get_db
+from fleet_beacon.models import PrimaryKey
+from fleet_beacon.mission.service import get as get_mission
 
 router = APIRouter()
 

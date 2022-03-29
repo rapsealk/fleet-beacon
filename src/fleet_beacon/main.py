@@ -8,11 +8,11 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import sessionmaker, scoped_session
 from starlette.requests import Request
 
-from src.fleet_beacon import config
-from src.fleet_beacon.api import router as api_router
-from src.fleet_beacon.view import router as view_router
-from src.fleet_beacon.database import Database
-from src.fleet_beacon.websocket import add_websocket_redis_bridge
+from fleet_beacon import config
+from fleet_beacon.api import router as api_router
+from fleet_beacon.view import router as view_router
+from fleet_beacon.database import Database
+from fleet_beacon.websocket import add_websocket_redis_bridge
 
 REQUEST_ID_CTX_KEY: Final[str] = "request_id"
 _request_id_ctx_var: ContextVar[Optional[str]] = ContextVar(REQUEST_ID_CTX_KEY, default=None)

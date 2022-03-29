@@ -1,8 +1,5 @@
-import os
-import sys
 import unittest
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 from src.fleet_beacon.utils.geometry import LatLng, get_haversine_distance
 
 

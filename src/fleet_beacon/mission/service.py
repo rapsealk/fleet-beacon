@@ -2,9 +2,9 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.models import PrimaryKey
-from src.fleet_beacon.mission.models import Mission, MissionCreate, MissionRead, MissionList
-from src.fleet_beacon.waypoint.service import create as create_waypoint
+from fleet_beacon.models import PrimaryKey
+from fleet_beacon.mission.models import Mission, MissionCreate, MissionRead, MissionList
+from fleet_beacon.waypoint.service import create as create_waypoint
 
 KST = timezone(timedelta(hours=9))
 

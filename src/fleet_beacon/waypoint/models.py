@@ -4,8 +4,8 @@ from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import FLOAT
 
-from src.fleet_beacon.database import Base
-from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
+from fleet_beacon.database import Base
+from fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
 
 
 class Waypoint(Base, TimeStampMixin):

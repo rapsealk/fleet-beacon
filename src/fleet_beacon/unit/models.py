@@ -4,10 +4,10 @@ from typing import List, Optional
 from sqlalchemy import Column, Boolean, Float, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from src.fleet_beacon.database import Base
-from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
-from src.fleet_beacon.unit.enums import PX4Mode
-from src.fleet_beacon.warehouse.models import WarehouseRead
+from fleet_beacon.database import Base
+from fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
+from fleet_beacon.unit.enums import PX4Mode
+from fleet_beacon.warehouse.models import WarehouseRead
 
 
 class Unit(Base, TimeStampMixin):

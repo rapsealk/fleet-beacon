@@ -4,10 +4,10 @@ from typing import List
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from src.fleet_beacon.database import Base
-from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
-from src.fleet_beacon.mission.enums import MissionStatus
-from src.fleet_beacon.waypoint.models import WaypointCreate, WaypointRead
+from fleet_beacon.database import Base
+from fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
+from fleet_beacon.mission.enums import MissionStatus
+from fleet_beacon.waypoint.models import WaypointCreate, WaypointRead
 
 
 class Mission(Base, TimeStampMixin):

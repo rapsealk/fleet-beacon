@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.unit.models import Unit, UnitCreate, UnitList, UnitUpdate
+from fleet_beacon.unit.models import Unit, UnitCreate, UnitList, UnitUpdate
 
 KST = timezone(timedelta(hours=9))
 

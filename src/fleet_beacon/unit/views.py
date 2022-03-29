@@ -4,10 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from src.fleet_beacon.database import get_db
-from src.fleet_beacon.models import PrimaryKey
-from src.fleet_beacon.unit.models import UnitCreate, UnitRead, UnitList, UnitUpdate
-from src.fleet_beacon.unit.service import delete, get, get_all, get_filtered_all, get_or_create, update
+from fleet_beacon.database import get_db
+from fleet_beacon.models import PrimaryKey
+from fleet_beacon.unit.models import UnitCreate, UnitRead, UnitList, UnitUpdate
+from fleet_beacon.unit.service import delete, get, get_all, get_filtered_all, get_or_create, update
 
 router = APIRouter()
 

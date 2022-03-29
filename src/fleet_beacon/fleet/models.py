@@ -3,9 +3,9 @@ from typing import List, Optional
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from src.fleet_beacon.database import Base
-from src.fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
-from src.fleet_beacon.unit.models import UnitRead
+from fleet_beacon.database import Base
+from fleet_beacon.models import FleetBeaconBase, PrimaryKey, TimeStampMixin
+from fleet_beacon.unit.models import UnitRead
 
 
 class Fleet(Base, TimeStampMixin):

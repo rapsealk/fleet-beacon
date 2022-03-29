@@ -1,11 +1,54 @@
 import asyncio
-import os
+import logging
 from typing import Iterable
 
-import redis
+import aioredis
+from aioredis.client import PubSub, Redis
 from fastapi import FastAPI, WebSocket
-from starlette.websockets import WebSocketDisconnect
-from websockets.exceptions import ConnectionClosedError
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+async def get_redis_pool():
+    return await aioredis.from_url("redis://localhost", encoding="utf-8", decode_responses=True)    # :6379
+
+
+async def redis_connector(websocket: WebSocket, channels: Iterable[str]):
+    async def producer_handler(pubsub: PubSub, ws: WebSocket, channels: Iterable[str]):
+        for channel in channels:
+            await pubsub.subscribe(channel)
+        try:
+            while True:
+                if message := await pubsub.get_message(ignore_subscribe_messages=True):
+                    print(f"[Redis::Producer] message={message}")
+                    await ws.send_text(message.get("data"))
+        except Exception as e:
+            logger.error(e)
+
+    """
+    async def consumer_handler(conn: Redis, ws: WebSocket, channel: str):
+        try:
+            while True:
+                if message := await ws.receive_text():
+                    await conn.publish(channel, message)
+        except WebSocketDisconnect as e:
+            logger.error(e)
+    """
+
+    conn = await get_redis_pool()
+    pubsub = conn.pubsub()
+
+    # consumer_task = consumer_handler(conn=conn, ws=websocket)
+    producer_task = producer_handler(pubsub=pubsub, ws=websocket, channels=channels)
+
+    done, pending = await asyncio.wait(
+        [producer_task], return_when=asyncio.FIRST_COMPLETED,
+    )
+    logger.debug(f"Done task: {done}")
+    for task in pending:
+        logger.debug(f"Canceling task: {task}")
+        task.cancel()
 
 
 def add_websocket_redis_bridge(
@@ -19,32 +62,6 @@ def add_websocket_redis_bridge(
     @app.websocket("/ws")
     async def websocket_endpoint(websocket: WebSocket):
         await websocket.accept()
-        print(f"[WebSocket::{os.getpid()}] Accepted: {websocket}")
-
-        # Get Redis Pub/Sub
-        pubsub = redis.Redis(host="localhost", port=6379, db=0).pubsub()
-        for topic in topics:
-            pubsub.subscribe(topic)
-
-        while True:
-            try:
-                if message := pubsub.get_message(timeout=5):
-                    message_type = message.get("type", None)
-                    if message_type == "subscribe":
-                        pass
-                    elif message_type == "message":
-                        message_data = message.get("data", None)
-                        print(f"[Redis::{os.getpid()}] Message: {message_data}")
-                        if message_data:
-                            await websocket.send_text(message_data.decode("utf-8"))     # ConnectionClosedError
-                else:
-                    print(f"[Redis::{os.getpid()}] Message is None! ({message})")
-                await asyncio.sleep(0.001)
-            except WebSocketDisconnect as e:
-                print(f"[WebSocket::{os.getpid()}] Disconnected: {e}")
-                break
-            except ConnectionClosedError as e:
-                print(f"[WebSocket::{os.getpid()}] ConnectionClosed: {e}")
-                break
+        await redis_connector(websocket, channels=["global_position"])
 
     return app

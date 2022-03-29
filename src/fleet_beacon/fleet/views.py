@@ -6,6 +6,7 @@ from fleet_beacon.database import get_db
 from fleet_beacon.models import PrimaryKey
 from fleet_beacon.fleet.models import FleetCreate, FleetRead, FleetList
 from fleet_beacon.fleet.service import create, get, get_all, assign_mission
+from fleet_beacon.fleet.tasks import publish_fleet_mission_job
 
 router = APIRouter()
 
@@ -47,11 +48,7 @@ async def assign_mission_to_fleet(
     Returns:
         :returns: :py:class:`fleet_beacon.fleet.models.FleetRead`
     """
-    # TODO: background_tasks
-    """
-    background_tasks.add_task(publish_container_job, routing_key=machine.name, session=session.name, session_id=session.id,
-                            artifact=artifact.object_name, devices=[device.uuid], dataset=dataset.object_name)
-    """
+    background_tasks.add_task(publish_fleet_mission_job, db_session=db_session, fleet_id=fleet_id, mission_id=mission_id)
     if not (fleet := await assign_mission(db_session=db_session, fleet_id=fleet_id, mission_id=mission_id)):
         raise HTTPException(
             status_cide=status.HTTP_404_NOT_FOUND,

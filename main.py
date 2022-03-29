@@ -7,7 +7,7 @@ import uvicorn
 parser = argparse.ArgumentParser()
 parser.add_argument('--host', type=str, default='0.0.0.0')
 parser.add_argument('--port', type=int, default=8000)
-parser.add_argument("--workers", type=int, default=1)
+parser.add_argument("--workers", type=int, default=None)
 parser.add_argument('--reload', action='store_true')
 
 
@@ -17,7 +17,10 @@ def main():
     if sys.platform == "win32":
         workers = 1
     else:   # ("linux", "darwin")
-        workers = min(max(os.cpu_count()+1, args.workers), 32)
+        if args.workers is None:
+            workers = min(os.cpu_count()+1, 32)
+        else:
+            workers = args.workers
 
     print(r"""
   _____.__                 __    ___.                                      

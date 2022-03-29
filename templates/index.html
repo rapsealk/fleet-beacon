@@ -84,51 +84,6 @@
             level: 3
         };
         const map = globalThis.map = new kakao.maps.Map(container, options);
-        const markers = [];
-        let polyline = null;
-
-        function drawPolyline() {
-            polyline?.setMap(null);
-            const linepath = markers.map(marker => marker.getPosition());
-            polyline = new kakao.maps.Polyline({
-                path: markers.map(marker => marker.getPosition()),
-                strokeWeight: 5,
-                strokeColor: "#FFAE00",
-                strokeOpacity: 0.7,
-                strokeStyle: "solid"
-            });
-            polyline.setMap(map);
-        };
-
-        kakao.maps.event.addListener(map, "click", (e) => {
-            const marker = new kakao.maps.Marker({
-                position: e.latLng,
-                draggable: true,
-                clickable: true,
-                map
-            });
-            markers.push(marker);
-            drawPolyline();
-
-            kakao.maps.event.addListener(marker, "dragend", drawPolyline);
-            kakao.maps.event.addListener(marker, "click", (e) => {
-                const infoWindowContent = `
-					<form style="padding: 10px;">
-						<div class="form-group">
-							<label for="time-expected">이동 시간</label>
-							<input type="number" class="form-control" id="time-expected" aria-describedby="timeHelp" placeholder="5">
-							<small id="timeHelp" class="form-text text-muted">희망 시간을 입력하세요.(s)</small>
-						</div>
-						<button type="button" class="btn btn-sm btn-primary">업데이트</button>
-					</form>
-				`;
-                const infoWindow = new kakao.maps.InfoWindow({
-                    content: infoWindowContent,
-                    removable: true
-                });
-                infoWindow.open(map, marker);
-            });
-        });
     </script>
     <!-- WebSocket -->
     <script type="text/javascript">

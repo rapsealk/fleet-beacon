@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# from datetime import datetime
+import os
+import json
 
 import rospy
 from mavros_msgs.msg import State
@@ -16,6 +17,10 @@ nav_sat_fix = NavSatFix()
 def _setpoint_position_global_callback(message: GeoPoseStamped):
     global global_position
     global_position = message
+
+    nav_sat_fix.latitude = global_position.pose.position.latitude
+    nav_sat_fix.longitude = global_position.pose.position.longitude
+    nav_sat_fix.altitude = global_position.pose.position.altitude
 
 
 def _handle_mavros_cmd_arming(request: CommandBool) -> CommandBoolResponse:
@@ -43,11 +48,14 @@ def main():
     global_position.pose.position.longitude = 0
     global_position.pose.position.altitude = 0
 
+    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.json"), "r") as f:
+        config = json.load(f)
+        nav_sat_fix.latitude = config["global_position"].get("latitude", -1)
+        nav_sat_fix.longitude = config["global_position"].get("longitude", -1)
+        nav_sat_fix.altitude = config["global_position"].get("altitude", -1)
+
     nav_sat_fix.status.status = NavSatStatus.STATUS_FIX
     nav_sat_fix.status.service = NavSatStatus.SERVICE_GPS
-    # nav_sat_fix.latitude = 0
-    # nav_sat_fix.longitude = 0
-    # nav_sat_fix.altitude = 0
 
     # Publishers
     state_publisher = rospy.Publisher("mavros/state", State, queue_size=10)
@@ -60,15 +68,13 @@ def main():
     rospy.Service("mavros/cmd/arming", CommandBool, _handle_mavros_cmd_arming)
     rospy.Service("mavros/set_mode", SetMode, _handle_mavros_set_mode)
 
-    rate = rospy.Rate(20.0)     # (OFFBOARD) publishing rate MUST be faster than 2Hz
+    rate = rospy.Rate(1.0)     # (OFFBOARD) publishing rate MUST be faster than 2Hz (20.0)
 
-    while not rospy.is_shutdown() and not current_state.connected:
+    while not rospy.is_shutdown() and current_state.connected:
         # rospy.loginfo('[{}] current_state: {}'.format(datetime.now().isoformat(), current_state))
         state_publisher.publish(current_state)
         global_position_publisher.publish(nav_sat_fix)
         rate.sleep()
-
-    rospy.spin()
 
 
 if __name__ == "__main__":

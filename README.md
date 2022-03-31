@@ -15,7 +15,7 @@
 ![Fleet-Beacon-03](https://user-images.githubusercontent.com/14137676/160911087-24a2521e-7e62-49f7-b345-978c5c8ce65a.gif)
 
 ## Docker Image Repository
-* mavros ([mavros:melodic-ros-base](https://hub.docker.com/repository/docker/rapsealk/mavros))
+* mavros ([rapsealk/mavros:melodic-ros-base](https://hub.docker.com/repository/docker/rapsealk/mavros))
 
 ## 사용 방법
 * `fleet-beacon` 서버
@@ -40,3 +40,8 @@ $ docker run -it --rm -v $PWD/$CATKIN_WS:/root/$CATKIN_WS -v $PWD/$CATKIN_WS/1bd
 (docker) $ rosrun beginner_tutorials px4_node.py &
 (docker) $ rosrun beginner_tutorials offb_node.py
 ```
+
+## Entity Relationship Diagram
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/14137676/161139729-2562c837-6bef-4e5b-9785-60073110be4d.png">
+</p>

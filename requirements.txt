@@ -5,6 +5,8 @@ fastapi
 jinja2~=3.0.3
 kafka-python~=2.0.2
 pymysql==1.0.2
+python-multipart~=0.0.5
+python-jose[cryptography]~=3.3.0
 redis~=4.1.4
 sqlalchemy==1.4.32
 uvicorn[standard]

@@ -29,7 +29,7 @@ def hash_password(password: str):
     return bcrypt.hashpw(pw, salt)
 
 
-class FleetBeaconUser(Base, TimeStampMixin):
+class User(Base, TimeStampMixin):
     id = Column(Integer, primary_key=True)
     email = Column(String(64), unique=True)
     password = Column(LargeBinary, nullable=False)

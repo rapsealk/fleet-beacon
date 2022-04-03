@@ -45,3 +45,8 @@ $ docker run -it --rm -v $PWD/$CATKIN_WS:/root/$CATKIN_WS -v $PWD/$CATKIN_WS/1bd
 <p align="center">
   <img src="https://user-images.githubusercontent.com/14137676/161139729-2562c837-6bef-4e5b-9785-60073110be4d.png">
 </p>
+
+## Resources
+| Image Name | Source | Preview |
+| ---------- | ------ | ------- |
+| [fleet-beacon.png](https://github.com/rapsealk/fleet-beacon/blob/master/static/img/fleet-beacon.png) | [Source](https://www.pngitem.com/middle/TiTRJRw_forged-protoss-fleet-beacon-superhero-hd-png-download/) | ![Protoss Fleet Beacon](https://github.com/rapsealk/fleet-beacon/blob/master/static/img/fleet-beacon.png) |

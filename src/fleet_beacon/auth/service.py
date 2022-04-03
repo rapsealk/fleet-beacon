@@ -24,17 +24,17 @@ def generate_password():
     return password
 
 
-def hash_password(password: str):
+def hash_password(password: str, salt: str = None):
     """Generates a hashed version of the provided password."""
     pw = bytes(password, "utf-8")
-    salt = bcrypt.gensalt()
+    salt = salt or bcrypt.gensalt()
     return bcrypt.hashpw(pw, salt)
 
 
-async def create_user(*, db_session: Session, user_in: UserCreate, secret: str = "") -> User:
+async def create_user(*, db_session: Session, user_in: UserCreate, secret: Optional[str] = None) -> User:
     if user := await find_user(db_session=db_session, email=user_in.email):
         return user
-    user = User(name=user_in.name, email=user_in.email, password=hash_password(user_in.password))
+    user = User(name=user_in.name, email=user_in.email, password=hash_password(user_in.password, salt=salt))
     db_session.add(user)
     db_session.commit()
     return user
@@ -51,7 +51,7 @@ async def sign_in_with_email_and_password(
     password: str,
     secret: str = ""
 ) -> Optional[User]:
-    if user := db_session.query(User).filter(User.email == email).first():
+    if user := await find_user(db_session=db_session, email=email):
         if user.check_password(password):
             return user
     return None

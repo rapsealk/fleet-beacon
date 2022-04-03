@@ -1,10 +1,47 @@
+import secrets
+import string
 from typing import Optional
 
+import bcrypt
 import jose
 from jose import jwt
 from sqlalchemy.orm import Session
 
-from fleet_beacon.auth.models import User
+from fleet_beacon.auth.models import User, UserCreate
+
+
+def generate_password():
+    """Generates a reasonable password if none is provided."""
+    alphanumeric = string.ascii_letters + string.digits
+    while True:
+        password = "".join(secrets.choice(alphanumeric) for i in range(10))
+        if (
+            any(c.islower() for c in password)
+            and any(c.isupper() for c in password)  # noqa
+            and sum(c.isdigit() for c in password) >= 3  # noqa
+        ):
+            break
+    return password
+
+
+def hash_password(password: str):
+    """Generates a hashed version of the provided password."""
+    pw = bytes(password, "utf-8")
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pw, salt)
+
+
+async def create_user(*, db_session: Session, user_in: UserCreate, secret: str = "") -> User:
+    if user := await find_user(db_session=db_session, email=user_in.email):
+        return user
+    user = User(name=user_in.name, email=user_in.email, password=hash_password(user_in.password))
+    db_session.add(user)
+    db_session.commit()
+    return user
+
+
+async def find_user(*, db_session: Session, email: str) -> Optional[User]:
+    return db_session.query(User).filter(User.email == email).first()
 
 
 async def sign_in_with_email_and_password(
@@ -13,10 +50,10 @@ async def sign_in_with_email_and_password(
     email: str,
     password: str,
     secret: str = ""
-) -> Optional[str]:
+) -> Optional[User]:
     if user := db_session.query(User).filter(User.email == email).first():
         if user.check_password(password):
-            return await get_bearer_token(email=user.email, secret=secret)
+            return user
     return None
 
 

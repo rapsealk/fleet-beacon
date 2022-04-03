@@ -13,6 +13,7 @@ from fleet_beacon.api import router as api_router
 from fleet_beacon.view import router as view_router
 from fleet_beacon.database import Database
 from fleet_beacon.websocket import add_websocket_redis_bridge
+from fleet_beacon.middlewares import SessionMiddleware
 
 REQUEST_ID_CTX_KEY: Final[str] = "request_id"
 _request_id_ctx_var: ContextVar[Optional[str]] = ContextVar(REQUEST_ID_CTX_KEY, default=None)
@@ -53,6 +54,9 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router)
     app.include_router(view_router)
+
+    # Middlewares
+    app.add_middleware(SessionMiddleware)
 
     app.mount("/static", StaticFiles(directory="static"), name="static")
 

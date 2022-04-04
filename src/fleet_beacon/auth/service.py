@@ -5,9 +5,14 @@ from typing import Optional
 import bcrypt
 import jose
 from jose import jwt
+from starlette.requests import Request
 from sqlalchemy.orm import Session
 
-from fleet_beacon.auth.models import User, UserCreate
+from fleet_beacon.auth.models import User, UserCreate, UserRead
+
+
+def get_current_user(request: Request) -> Optional[UserRead]:
+    return request.state.session.get("user")
 
 
 def generate_password():

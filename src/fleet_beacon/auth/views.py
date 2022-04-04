@@ -28,7 +28,7 @@ async def auth_with_email_and_password(
             detail=[{"msg": f"The user with this username({form_data.username}) or password does not exists."}]
         )
     user = UserRead(**user.dict())
-    request.state.session["user"] = user
+    request.state.session["user"] = user.dict()
     return user
 
 

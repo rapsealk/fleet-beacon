@@ -1,4 +1,6 @@
+import os
 import pathlib
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.requests import Request
@@ -12,7 +14,7 @@ from fleet_beacon.config import KAKAO_MAP_APP_KEY, SECRET_KEY
 from fleet_beacon.database import get_db
 from fleet_beacon.models import PrimaryKey
 from fleet_beacon.auth.models import UserRead
-from fleet_beacon.auth.service import sign_in_with_email_and_password
+from fleet_beacon.auth.service import get_current_user, sign_in_with_email_and_password
 from fleet_beacon.mission.service import get as get_mission
 
 router = APIRouter()
@@ -43,15 +45,23 @@ async def signin(
             detail=[{"msg": f"The user with this username({form_data.username}) or password does not exists."}]
         )
     user = UserRead(**user.dict())
-    request.state.session["user"] = user
+    request.state.session["user"] = user.dict()
     return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/", response_class=HTMLResponse)
-def get_main_view(request: Request, db_session: Session = Depends(get_db)):
+def get_main_view(
+    request: Request,
+    current_user: Optional[UserRead] = Depends(get_current_user),
+    db_session: Session = Depends(get_db)
+):
+    print(f"[{os.getpid()}::GET /] User: {current_user}")
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("index.html", context={
         "request": request,
-        "kakao_map_app_key": KAKAO_MAP_APP_KEY
+        "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "current_user": current_user
     })
 
 

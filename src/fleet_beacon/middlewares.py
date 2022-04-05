@@ -18,7 +18,8 @@ class SessionMiddleware(BaseHTTPMiddleware):
         request.state.session = await self._in_memory_storage.get(session_id) or {}
         response = await call_next(request)
         await self._in_memory_storage.put(session_id, request.state.session)
-        response.set_cookie(key="session", value=session_id)
+        if request.state.session:
+            response.set_cookie(key="session", value=session_id)
         return response
 
 
@@ -55,6 +56,6 @@ class RedisSessionStorage(BaseSessionStorage):
             return json.loads(value.decode("utf-8"))
         return None
 
-    async def put(self, key: str, value: Any):
+    async def put(self, key: str, value: Any, expire: int = 60 * 5):
         value = json.dumps(value)
-        await self._storage.set(key, value.encode("utf-8"))
+        await self._storage.set(key, value.encode("utf-8"), ex=expire)

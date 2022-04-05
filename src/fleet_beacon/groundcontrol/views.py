@@ -1,4 +1,3 @@
-import os
 import pathlib
 from typing import Optional
 
@@ -24,7 +23,9 @@ auth_templates = Jinja2Templates(directory=pathlib.Path("templates") / "auth")
 
 
 @router.get("/signin", response_class=HTMLResponse)
-async def get_signin_view(request: Request):
+async def get_signin_view(request: Request, current_user: Optional[UserRead] = Depends(get_current_user)):
+    if current_user:
+        return RedirectResponse("/", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return auth_templates.TemplateResponse("signin.html", context={
         "request": request
     })
@@ -49,13 +50,18 @@ async def signin(
     return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
 
+@router.get("/signout", response_class=RedirectResponse)
+async def signout(request: Request):
+    request.state.session = None
+    return RedirectResponse("/", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
+
 @router.get("/", response_class=HTMLResponse)
-def get_main_view(
+async def get_main_view(
     request: Request,
     current_user: Optional[UserRead] = Depends(get_current_user),
     db_session: Session = Depends(get_db)
 ):
-    print(f"[{os.getpid()}::GET /] User: {current_user}")
     if not current_user:
         return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("index.html", context={
@@ -66,59 +72,107 @@ def get_main_view(
 
 
 @router.get("/warehouse", response_class=HTMLResponse)
-def get_warehouse_view(request: Request, db_session: Session = Depends(get_db)):
+async def get_warehouse_view(
+    request: Request,
+    current_user: Optional[UserRead] = Depends(get_current_user),
+    db_session: Session = Depends(get_db)
+):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("warehouse.html", context={
         "request": request,
-        "kakao_map_app_key": KAKAO_MAP_APP_KEY
+        "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "current_user": current_user
     })
 
 
 @router.get("/warehouse/{warehouse_id}", response_class=HTMLResponse)
-def get_warehouse_detail_view(request: Request, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
+async def get_warehouse_detail_view(
+    request: Request,
+    warehouse_id: PrimaryKey,
+    current_user: Optional[UserRead] = Depends(get_current_user),
+    db_session: Session = Depends(get_db)
+):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("warehouse_detail.html", context={
         "request": request,
-        "warehouse_id": warehouse_id
+        "warehouse_id": warehouse_id,
+        "current_user": current_user
     })
 
 
 @router.get("/warehouse/{warehouse_id}/fleet/new", response_class=HTMLResponse)
-def get_fleet_new_view(request: Request, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
+async def get_fleet_new_view(
+    request: Request,
+    warehouse_id: PrimaryKey,
+    current_user: Optional[UserRead] = Depends(get_current_user),
+    db_session: Session = Depends(get_db)
+):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("fleet_new.html", context={
         "request": request,
-        "warehouse_id": warehouse_id
+        "warehouse_id": warehouse_id,
+        "current_user": current_user
     })
 
 
 @router.get("/fleet", response_class=HTMLResponse)
-def get_fleet_view(request: Request, db_session: Session = Depends(get_db)):
+async def get_fleet_view(
+    request: Request,
+    current_user: Optional[UserRead] = Depends(get_current_user),
+    db_session: Session = Depends(get_db)
+):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("fleet.html", context={
         "request": request,
-        "kakao_map_app_key": KAKAO_MAP_APP_KEY
+        "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "current_user": current_user
     })
 
 
 @router.get("/mission", response_class=HTMLResponse)
-def get_mission_view(request: Request, db_session: Session = Depends(get_db)):
+async def get_mission_view(
+    request: Request,
+    current_user: Optional[UserRead] = Depends(get_current_user),
+    db_session: Session = Depends(get_db)
+):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("mission.html", context={
         "request": request,
-        "kakao_map_app_key": KAKAO_MAP_APP_KEY
+        "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "current_user": current_user
     })
 
 
 @router.get("/mission/new", response_class=HTMLResponse)
-def get_mission_new_view(request: Request):
+async def get_mission_new_view(request: Request, current_user: Optional[UserRead] = Depends(get_current_user)):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("mission_new.html", context={
         "request": request,
-        "kakao_map_app_key": KAKAO_MAP_APP_KEY
+        "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "current_user": current_user
     })
 
 
 @router.get("/mission/assignment/{mission_id}")
-async def get_mission_assignment_view(request: Request, mission_id: PrimaryKey, db_session: Session = Depends(get_db)):
+async def get_mission_assignment_view(
+    request: Request,
+    mission_id: PrimaryKey,
+    current_user: Optional[UserRead] = Depends(get_current_user),
+    db_session: Session = Depends(get_db)
+):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     mission = await get_mission(db_session=db_session, mission_id=mission_id)
     return templates.TemplateResponse("mission_assignment.html", context={
         "request": request,
         "kakao_map_app_key": KAKAO_MAP_APP_KEY,
+        "current_user": current_user,
         "mission_id": mission_id,
         "waypoints": mission.waypoints,
         "enumerate": enumerate,

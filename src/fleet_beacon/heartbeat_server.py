@@ -1,44 +1,26 @@
-import argparse
+import asyncio
 
-from redis import Redis
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--host", type=str, default="localhost")
-    parser.add_argument("--port", type=int, default=6379)
-    parser.add_argument("--channel", type=str, default="heartbeat")
-    return parser.parse_args()
+import aioredis
 
 
-def _handle_redis_message(message: dict, *, redis: Redis):
-    channel = message.get("channel", b"").decode("utf-8")
-    if channel == "heartbeat":
-        _handle_heartbeat_message(message, redis=redis)
+@asyncio.coroutine
+async def consume_heartbeat(host: str = "localhost", port: int = 6379, db: int = 0):
+    conn = await aioredis.from_url(f"redis://{host}:{port}/{db}", encoding="utf-8", decode_responses=True)
+    pubsub = conn.pubsub()
 
+    async def consumer_handler(pubsub: aioredis.client.PubSub, channel: str):
+        await pubsub.subscribe(channel)
+        try:
+            while True:
+                if message := await pubsub.get_message(ignore_subscribe_messages=True):
+                    print(f"[Redis::Heartbeat] message={message}")
+                    # TODO
+        except Exception as e:
+            print(f"[Redis::Heartbeat] Exception: {e}")
 
-def _handle_heartbeat_message(message: dict, *, redis: Redis):
-    data = message.get("data", b"{}").decode("utf-8")
-    redis.set(data["uuid"], data["global_position"])
-
-
-def main():
-    args = parse_args()
-
-    redis = Redis(host=args.host, port=args.port, db=0)
-    s = redis.pubsub()
-
-    s.subscribe(args.channel)
-
-    while True:
-        res = s.get_message(timeout=5)
-        if res is not None:
-            message_type = res.get('type', None)
-            if message_type == "subscribe":
-                pass
-            elif message_type == "message":
-                _handle_redis_message(res, redis=redis)
-
-
-if __name__ == "__main__":
-    main()
+    consumer_task = consumer_handler(pubsub=pubsub, channel="heartbeat")
+    done, pending = await asyncio.wait(
+        [consumer_task], return_when=asyncio.FIRST_COMPLETED
+    )
+    for task in pending:
+        task.cancel()

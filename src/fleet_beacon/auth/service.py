@@ -39,7 +39,7 @@ def hash_password(password: str, salt: str = None):
 async def create_user(*, db_session: Session, user_in: UserCreate, secret: Optional[str] = None) -> User:
     if user := await find_user(db_session=db_session, email=user_in.email):
         return user
-    user = User(name=user_in.name, email=user_in.email, password=hash_password(user_in.password, salt=salt))
+    user = User(name=user_in.name, email=user_in.email, password=hash_password(user_in.password, salt=secret))
     db_session.add(user)
     db_session.commit()
     return user

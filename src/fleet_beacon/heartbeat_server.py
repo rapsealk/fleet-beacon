@@ -12,7 +12,7 @@ async def consume_heartbeat(host: str = "localhost", port: int = 6379, db: int =
         await pubsub.subscribe(channel)
         try:
             while True:
-                if message := await pubsub.get_message(ignore_subscribe_messages=True):
+                if message := await pubsub.get_message(ignore_subscribe_messages=True, timeout=5.0):
                     print(f"[Redis::Heartbeat] message={message}")
                     # TODO
         except Exception as e:

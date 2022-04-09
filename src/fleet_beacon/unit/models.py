@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import Column, Boolean, Float, Integer, String, ForeignKey
+from sqlalchemy import Column, Boolean, DateTime, Float, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from fleet_beacon.database import Base
@@ -22,6 +22,7 @@ class Unit(Base, TimeStampMixin):
     longitude = Column(Float, default=0.0)
     altitude = Column(Float, default=0.0)
     yaw = Column(Float, default=0.0)
+    heartbeat = Column(DateTime, nullable=True)
     fleet_id = Column(Integer, ForeignKey("fleet.id"), nullable=True)
     warehouse_id = Column(Integer, ForeignKey("warehouse.id"), nullable=False)
     fleet = relationship("Fleet", back_populates="units")
@@ -50,6 +51,7 @@ class UnitRead(UnitBase):
     longitude: float
     altitude: float
     yaw: float
+    heartbeat: Optional[datetime] = None
     fleet_id: Optional[int] = None
     warehouse_id: int
     created_at: datetime
@@ -75,5 +77,6 @@ class UnitUpdate(UnitBase):
     longitude: float = 0
     altitude: float = 0
     yaw: float = 0
+    heartbeat: Optional[datetime] = None
     fleet_id: Optional[int] = None
     warehouse_id: Optional[int] = None

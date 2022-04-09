@@ -10,7 +10,7 @@ from threading import Thread
 from typing import Iterable
 
 import redis
-import requests
+# import requests
 import rospy
 from mavros_msgs.msg import State
 from mavros_msgs.srv import CommandBool, SetMode
@@ -93,6 +93,7 @@ class OffboardNode:
             self._warehouse = config["warehouse"]
 
         # HTTP Request
+        """
         response = requests.post(f"{base_url}/api/unit", json={
             "uuid": config["uuid"],
             "warehouse_id": config["warehouse"]
@@ -101,6 +102,7 @@ class OffboardNode:
             pass    # print(f"[POST /robot] {response.content()}")
         else:
             pass
+        """
 
         # Heartbeat Thread
         heartbeat_thread = Thread(target=self._send_heartbeat, args=(REDIS_HOST, REDIS_PORT), daemon=True)
@@ -202,6 +204,7 @@ class OffboardNode:
             message = json.dumps({
                 "timestamp": int(time.time() * 1000),
                 "uuid": self.uuid,
+                "warehouse_id": self._warehouse,
                 "global_position": {
                     "latitude": self.nav_sat_fix.latitude,
                     "longitude": self.nav_sat_fix.longitude,

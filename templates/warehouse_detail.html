@@ -98,12 +98,13 @@
 
                 // Status
                 const indicatorTypes = ["positive", "intermediary", "negative"];
-                const pulseTypes = ["", "pulse"];
+                const indicatorType = item.connected ? indicatorTypes[0] : indicatorTypes[2];
+                const pulseTypes = [""/*, "pulse"*/];
                 td = document.createElement("td");
                 td.setAttribute("scope", "row");
                 td.style.margin = "auto";
                 td.style.textAlign = "center";
-                td.innerHTML = `<status-indicator ${indicatorTypes.choice()} ${pulseTypes.choice()}></status-indicator>`;
+                td.innerHTML = `<status-indicator ${indicatorType} ${pulseTypes.choice()}></status-indicator>`;
                 tr.appendChild(td);
 
                 // Buttons

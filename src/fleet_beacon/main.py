@@ -33,9 +33,17 @@ def create_app() -> FastAPI:
     database = Database(config.SQLALCHEMY_DATABASE_URI)
     database.init_database()
 
+    heartbeat_coroutine_task = None
+
     @app.on_event("startup")
     def startup():
-        asyncio.ensure_future(consume_heartbeat())
+        nonlocal heartbeat_coroutine_task
+        heartbeat_coroutine_task = asyncio.get_event_loop().create_task(consume_heartbeat())
+
+    @app.on_event("shutdown")
+    def shutdown():
+        if heartbeat_coroutine_task:
+            heartbeat_coroutine_task.cancel()
 
     @app.middleware("http")
     async def db_session_middleware(request: Request, call_next: Callable):

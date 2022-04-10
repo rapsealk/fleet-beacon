@@ -23,8 +23,8 @@
                 {% include "sidebar.html" %}
             {% endwith %}
 
-            <!-- Table -->
-            <div class="col-10" style="padding: 8pt; overflow-y: scroll;">
+            <div class="col-10" style="padding-left: 8pt; overflow-y: scroll;">
+                <!-- Table -->
                 <table class="table">
                     <thead>
                         <tr>
@@ -59,6 +59,22 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- Pagination -->
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </main>
 
@@ -70,6 +86,57 @@
                 return this[parseInt(Math.random() * 1000) % this.length];
             };
 
+            // Pagination
+            const searchParams = new URLSearchParams(window.location.href.split("?")[1]);
+            const currentPage = parseInt(searchParams.get("page") || 1);
+            const paginationStep = 5;
+            const currentPageGroup = Math.floor((currentPage - 1) / paginationStep);
+
+            function setPageNavigationBar(page) {
+                const pagination = document.querySelector(".pagination");
+                pagination.innerHTML = "";
+
+                const previousButton = document.createElement("li");
+                previousButton.className = "page-item";
+                let anchor = document.createElement("a");
+                anchor.className = "page-link";
+                anchor.href = `/warehouse/{{ warehouse_id }}?page=${currentPageGroup - 1}`;
+                anchor.setAttribute("tabindex", "-1");
+                anchor.setAttribute("aria-disabled", "false");
+                anchor.text = "Previous";
+                if (currentPage === 1) {
+                    previousButton.className = "page-item disabled";
+                    anchor.href = "/warehouse/{{ warehouse_id }}";
+                    anchor.setAttribute("aria-disabled", "true");
+                }
+                previousButton.appendChild(anchor);
+                pagination.appendChild(previousButton);
+
+                for (let i = 1; i <= paginationStep; i++) {
+                    const li = document.createElement("li");
+                    li.className = "page-item";
+                    if (((currentPage - 1) % paginationStep + 1) === i) {
+                        li.className = "page-item active";
+                    }
+                    const a = document.createElement("a");
+                    a.className = "page-link";
+                    a.href = `/warehouse/{{ warehouse_id }}?page=${currentPageGroup * paginationStep + i}`;
+                    a.text = `${currentPageGroup * paginationStep + i}`;
+                    li.appendChild(a);
+                    pagination.appendChild(li);
+                }
+
+                const nextButton = document.createElement("li");
+                nextButton.className = "page-item";
+                anchor = document.createElement("a");
+                anchor.className = "page-link";
+                anchor.href = `/warehouse/{{ warehouse_id }}?page=${(currentPageGroup + 1) * paginationStep + 1}`;
+                anchor.text = "Next";
+                nextButton.appendChild(anchor);
+                pagination.appendChild(nextButton);
+            }
+
+            // Table
             function clearTable() {
                 const tbody = document.querySelector("table.table > tbody");
                 tbody.innerHTML = "";
@@ -113,17 +180,18 @@
                 tbody.appendChild(tr);
             }
 
-            function fetchUnitsInWarehouse() {
+            function fetchUnitsInWarehouse(page) {
                 clearTable();
-                fetch(`${window.location.origin}/api/warehouse/{{ warehouse_id }}/detail`)
+                fetch(`${window.location.origin}/api/warehouse/{{ warehouse_id }}/detail?page=${page}`)
                     .then((response) => response.json())
                     .then((response) => {
                         response.units.items.forEach(addTableItem);
+                        setPageNavigationBar(currentPage);
                     })
                     .catch(console.error);
             }
 
-            fetchUnitsInWarehouse();
+            fetchUnitsInWarehouse(currentPage);
 
             document.getElementById("btn-refresh").addEventListener("click", fetchUnitsInWarehouse);
         </script>

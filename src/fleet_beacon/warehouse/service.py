@@ -33,9 +33,9 @@ async def get_all(*, db_session: Session) -> List[Warehouse]:
     return db_session.query(Warehouse).all()
 
 
-async def get_detail(*, db_session: Session, warehouse_id: int) -> Optional[UnitWarehouseDetail]:
+async def get_detail(*, db_session: Session, warehouse_id: int, page: Optional[int] = None) -> Optional[UnitWarehouseDetail]:
     if warehouse := db_session.query(Warehouse).filter(Warehouse.id == warehouse_id).first():
-        units = await get_by_warehouse(db_session=db_session, warehouse_id=warehouse_id)
+        units = await get_by_warehouse(db_session=db_session, warehouse_id=warehouse_id, page=page)
         return UnitWarehouseDetail(**warehouse.dict(), units=units)
     else:
         return None

@@ -90,9 +90,12 @@ async def get_warehouse_view(
 async def get_warehouse_detail_view(
     request: Request,
     warehouse_id: PrimaryKey,
+    page: Optional[int] = 1,
     current_user: Optional[UserRead] = Depends(get_current_user),
     db_session: Session = Depends(get_db)
 ):
+    if page <= 0:
+        return RedirectResponse(f"/warehouse/{warehouse_id}", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     if not current_user:
         return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return templates.TemplateResponse("warehouse_detail.html", context={

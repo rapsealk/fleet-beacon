@@ -29,10 +29,8 @@ async def get_warehouse(*, db_session: Session = Depends(get_db), warehouse_id: 
 
 
 @router.get("/{warehouse_id}/detail", response_model=UnitWarehouseDetail)
-async def get_warehouse_detail(*, warehouse_id: PrimaryKey, db_session: Session = Depends(get_db)):
-    print(f"[GET /api/warehouse/{warehouse_id}/detail]")
-    if warehouse := await get_detail(db_session=db_session, warehouse_id=warehouse_id):
-        print(f"[GET /api/warehouse/{warehouse_id}/detail] warehouse={warehouse}")
+async def get_warehouse_detail(*, warehouse_id: PrimaryKey, page: Optional[int] = None, db_session: Session = Depends(get_db)):
+    if warehouse := await get_detail(db_session=db_session, warehouse_id=warehouse_id, page=page):
         return warehouse
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,

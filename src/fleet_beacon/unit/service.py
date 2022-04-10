@@ -33,8 +33,12 @@ async def get_by_uuid(*, db_session: Session, uuid: str) -> Optional[Unit]:
     return db_session.query(Unit).filter(Unit.uuid == uuid).first()
 
 
-async def get_by_warehouse(*, db_session: Session, warehouse_id: int) -> UnitList:
-    units = db_session.query(Unit).filter(Unit.warehouse_id == warehouse_id).all()
+async def get_by_warehouse(*, db_session: Session, warehouse_id: int, page: Optional[int] = None) -> UnitList:
+    _items_per_page = 10
+    query = db_session.query(Unit).filter(Unit.warehouse_id == warehouse_id)
+    if page:
+        query = query.offset(max(0, page-1) * _items_per_page)
+    units = query.limit(_items_per_page).all()
     return UnitList(total=len(units), items=units)
 
 

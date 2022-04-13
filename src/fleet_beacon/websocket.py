@@ -3,10 +3,10 @@ import logging
 from typing import Iterable
 
 import aioredis
-from aioredis.client import PubSub, Redis
+from aioredis.client import PubSub
 from fastapi import FastAPI, WebSocket
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -20,26 +20,15 @@ async def redis_connector(websocket: WebSocket, channels: Iterable[str]):
             await pubsub.subscribe(channel)
         try:
             while True:
-                if message := await pubsub.get_message(ignore_subscribe_messages=True):
+                if message := await pubsub.get_message(ignore_subscribe_messages=True, timeout=5.0):
                     print(f"[Redis::Producer] message={message}")
                     await ws.send_text(message.get("data"))
         except Exception as e:
             logger.error(e)
 
-    """
-    async def consumer_handler(conn: Redis, ws: WebSocket, channel: str):
-        try:
-            while True:
-                if message := await ws.receive_text():
-                    await conn.publish(channel, message)
-        except WebSocketDisconnect as e:
-            logger.error(e)
-    """
-
     conn = await get_redis_pool()
     pubsub = conn.pubsub()
 
-    # consumer_task = consumer_handler(conn=conn, ws=websocket)
     producer_task = producer_handler(pubsub=pubsub, ws=websocket, channels=channels)
 
     done, pending = await asyncio.wait(

@@ -33,27 +33,37 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="rel">Name</th>
+                            <th scope="col">Actions</th>
                             <th scope="col">
                                 <div class="row">
-                                    <div class="col-8" style="align-self: center;">
-                                        Actions
+                                    <div class="col-4">
+                                        <button type="button" id="btn-refresh" class="btn btn-xs" style="margin-bottom: -0.5rem;">
+                                            <i class="fa fa-refresh"></i>
+                                        </button>        
                                     </div>
                                     <div class="col-4">
-                                        <div class="row">
-                                            <div class="col-2">
-                                                <button type="button" id="btn-refresh" class="btn btn-xs">
-                                                    <i class="fa fa-refresh"></i>
-                                                </button>        
-                                            </div>
-                                            <div class="col-2">
-                                                <a href="/mission/new" type="button" class="btn btn-xs">
-                                                    <i class="fa fa-plus"></i>
-                                                </a>
-                                            </div>
-                                        </div>
+                                        <a href="/mission/new" type="button" class="btn btn-xs" style="margin-bottom: -0.5rem;">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </th>
+                            <!--
+                            <th scope="col" class="col-1">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button type="button" id="btn-refresh" class="btn btn-xs">
+                                            <i class="fa fa-refresh"></i>
+                                        </button>        
+                                    </div>
+                                    <div class="col-4">
+                                        <a href="/warehouse/{{ warehouse_id }}/fleet/new" type="button" class="btn btn-xs">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </th>
+                            -->
                         </tr>
                     </thead>
                     <tbody>
@@ -91,9 +101,9 @@
                 polyline = new kakao.maps.Polyline({
                     path: markers.map(marker => marker.getPosition()),
                     strokeWeight: 5,
-                    strokeColor: "#FFAE00",
-                    strokeOpacity: 0.7,
-                    strokeStyle: "solid"
+                    strokeColor: "#222222",
+                    strokeOpacity: 1.0,
+                    strokeStyle: "solid"    // ["dash", "dot"]
                 });
                 polyline.setMap(map);
             };
@@ -124,6 +134,10 @@
                     </a>
                 `;
                 tr.appendChild(td);
+
+                // Buttons
+                tr.appendChild(document.createElement("td"));
+
                 tr.addEventListener("click", (e) => {
                     markers.forEach((marker) => marker.setMap(null));
                     markers.clear();

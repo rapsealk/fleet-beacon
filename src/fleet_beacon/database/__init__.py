@@ -68,12 +68,8 @@ Base = declarative_base(cls=CustomBase)
 
 
 class Database:
-    def __init__(self, url: str = 'mysql://root:0000@localhost:3306/fleet_beacon'):
+    def __init__(self, url: str = "mysql+pymysql://root:0000@localhost:3306/fleet_beacon"):
         self._engine = create_engine(url)
-        """
-        self._session_factory = orm.scoped_session(
-            sessionmaker(autocommit=False, autoflush=False, bind=self._engine))
-        """
 
     def init_database(self):
         from fleet_beacon.auth.models import User               # noqa: F401
@@ -88,20 +84,3 @@ class Database:
     @property
     def engine(self):
         return self._engine
-
-    """
-    @contextmanager
-    def session(self):
-        session: Session = self.session_factory()
-        try:
-            yield session
-        except Exception as e:
-            logger.exception(f'{e}\nSession rollback because of exception')
-            raise
-        finally:
-            session.close()
-
-    @property
-    def session_factory(self) -> Session:
-        return self._session_factory
-    """

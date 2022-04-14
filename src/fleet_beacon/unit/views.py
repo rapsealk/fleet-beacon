@@ -25,8 +25,13 @@ async def get_units(*, db_session: Session = Depends(get_db)):
 
 
 @router.get("/filtered", response_model=UnitList)
-async def get_filtered_units(*, fleet: Optional[PrimaryKey] = None, db_session: Session = Depends(get_db)):
-    units = await get_filtered_all(db_session=db_session, fleet_id=fleet)
+async def get_filtered_units(
+    *,
+    warehouse: Optional[PrimaryKey] = None,
+    fleet: Optional[PrimaryKey] = None,
+    db_session: Session = Depends(get_db)
+):
+    units = await get_filtered_all(db_session=db_session, warehouse_id=warehouse, fleet_id=fleet)
     return UnitList(total=len(units), items=units)
 
 

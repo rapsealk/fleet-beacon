@@ -88,7 +88,7 @@
                 td.innerHTML = `
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" id="checkbox-${item.id}" name="optionsCheckboxes"><span class="checkbox-material"><span class="check"></span></span>
+                            <input type="checkbox" id="checkbox-${item.id}" name="optionsCheckboxes" ${item.fleet_id && "disabled"}><span class="checkbox-material"><span class="check"></span></span>
                         </label>
                     </div>
                 `;
@@ -98,7 +98,7 @@
             }
 
             function fetchUnits() {
-                fetch(`${window.location.origin}/api/unit/filtered`)
+                fetch(`${window.location.origin}/api/unit/filtered?warehouse={{ warehouse_id }}`)
                     .then((response) => response.json())
                     .then((response) => {
                         clearTable();

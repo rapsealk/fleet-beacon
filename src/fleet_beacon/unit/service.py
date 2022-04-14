@@ -25,8 +25,18 @@ async def get_all(*, db_session: Session) -> List[Unit]:
     return db_session.query(Unit).all()
 
 
-async def get_filtered_all(*, fleet_id: Optional[int] = None, db_session: Session) -> List[Unit]:
-    return db_session.query(Unit).filter(Unit.fleet_id == fleet_id).all()
+async def get_filtered_all(
+    *,
+    warehouse_id: Optional[int] = None,
+    fleet_id: Optional[int] = None,
+    db_session: Session
+) -> List[Unit]:
+    query = db_session.query(Unit)
+    if warehouse_id is not None:
+        query = query.filter(Unit.warehouse_id == warehouse_id)
+    if fleet_id is not None:
+        query = query.filter(Unit.fleet_id == fleet_id)
+    return query.all()
 
 
 async def get_by_uuid(*, db_session: Session, uuid: str) -> Optional[Unit]:

@@ -47,6 +47,9 @@ $ docker run -it --rm -v $PWD/$CATKIN_WS:/root/$CATKIN_WS -v $PWD/$CATKIN_WS/1bd
 </p>
 
 ## Resources
-| Image Name | Source | Preview |
+| Resource Name | Source | Preview |
 | ---------- | ------ | ------- |
 | [fleet-beacon.png](https://github.com/rapsealk/fleet-beacon/blob/master/static/img/fleet-beacon.png) | [Source](https://www.pngitem.com/middle/TiTRJRw_forged-protoss-fleet-beacon-superhero-hd-png-download/) | ![Protoss Fleet Beacon](https://github.com/rapsealk/fleet-beacon/blob/master/static/img/fleet-beacon.png) |
+| [001.mp4](https://github.com/rapsealk/fleet-beacon/blob/master/media/001.mp4) | [Source](https://www.pexels.com/video/airplane-wing-856486/) | - |
+| [002.mp4](https://github.com/rapsealk/fleet-beacon/blob/master/media/002.mp4) | [Source](https://www.pexels.com/video/spotting-the-landing-of-an-airplane-on-the-runway-in-montreal-canada-airport-3678380/) | - |
+| [003.mp4](https://github.com/rapsealk/fleet-beacon/blob/master/media/003.mp4) | [Source](https://www.pexels.com/video/aircraft-wing-1451800/) | - |

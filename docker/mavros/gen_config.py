@@ -28,7 +28,6 @@ def main():
             raise Exception()
 
     config = {
-        "base_url": "http://host.docker.internal:8000",
         "uuid": str(uuid.uuid4()),
         "warehouse": args.warehouse,
         "global_position": {

@@ -154,7 +154,10 @@
 
                 // Name
                 let td = document.createElement("td");
-                td.innerText = item.uuid;
+                const a = document.createElement("a");
+                a.innerText = item.uuid;
+                a.href = `/unit/stream/${item.uuid}`;
+                td.appendChild(a);
                 tr.appendChild(td);
 
                 // Fleet

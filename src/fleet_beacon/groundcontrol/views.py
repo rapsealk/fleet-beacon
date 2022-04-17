@@ -123,6 +123,21 @@ async def get_fleet_new_view(
     })
 
 
+@router.get("/unit/stream/{uuid}", response_class=HTMLResponse)
+async def get_unit_stream_view(
+    request: Request,
+    uuid: str,
+    current_user: Optional[UserRead] = Depends(get_current_user)
+):
+    if not current_user:
+        return RedirectResponse("/signin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+    return templates.TemplateResponse("unit_stream.html", context={
+        "request": request,
+        "current_user": current_user,
+        "channel": uuid
+    })
+
+
 @router.get("/fleet", response_class=HTMLResponse)
 async def get_fleet_view(
     request: Request,

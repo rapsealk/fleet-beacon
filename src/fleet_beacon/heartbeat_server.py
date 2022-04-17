@@ -27,7 +27,7 @@ async def consume_heartbeat(host: str = "localhost", port: int = 6379, db: int =
         try:
             while True:
                 if message := await pubsub.get_message(ignore_subscribe_messages=True, timeout=5.0):
-                    print(f"[Redis::Heartbeat] message={message} ({type(message)})")
+                    # print(f"[Redis::Heartbeat] message={message} ({type(message)})")
                     data = json.loads(message["data"])
                     with session() as sess:
                         if not (unit := await get_unit_by_uuid(db_session=sess, uuid=data["uuid"])):

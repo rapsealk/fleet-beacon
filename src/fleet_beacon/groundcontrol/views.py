@@ -15,8 +15,10 @@ from fleet_beacon.models import PrimaryKey
 from fleet_beacon.auth.models import UserRead
 from fleet_beacon.auth.service import get_current_user, sign_in_with_email_and_password
 from fleet_beacon.mission.service import get as get_mission
+from fleet_beacon.groundcontrol.stream.views import router as stream_router
 
 router = APIRouter()
+router.include_router(stream_router, prefix="/stream", tags=["stream"])
 
 templates = Jinja2Templates(directory="templates")
 auth_templates = Jinja2Templates(directory=pathlib.Path("templates") / "auth")

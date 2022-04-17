@@ -219,12 +219,11 @@ class OffboardNode:
         while True:
             stream = Mp4VideoStream(os.path.join(os.path.dirname(os.path.dirname(__file__)), "000.mp4"))
             for frame in stream:
-                height, width, channel = frame.shape
-                buffer = struct.pack(">I", height) + struct.pack(">I", width) + struct.pack(">I", channel) + frame.tobytes()
+                buffer = b"".join(map(lambda x: struct.pack(">I", x), frame.shape)) + frame.tobytes()
                 original_size = sys.getsizeof(buffer)
                 buffer = zlib.compress(buffer, level=5)
                 compressed_size = sys.getsizeof(buffer)
-                rospy.loginfo(f"[Redis] Original: {original_size} bytes / Compressed: {compressed_size} bytes ({compressed_size / original_size * 100:.2f}%)")
+                rospy.loginfo(f"[Redis] {channel} ({compressed_size / original_size * 100:.2f}%)")
                 pub.publish(channel=channel, message=buffer)
                 time.sleep(1 / fps)
 

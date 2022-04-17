@@ -5,6 +5,7 @@ fastapi
 gunicorn
 jinja2~=3.0.3
 kafka-python~=2.0.2
+opencv-python~=4.5.5
 pymysql==1.0.2
 python-multipart~=0.0.5
 python-jose[cryptography]~=3.3.0

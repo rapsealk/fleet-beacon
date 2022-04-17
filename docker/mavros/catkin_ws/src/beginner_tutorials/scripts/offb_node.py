@@ -3,18 +3,23 @@
 import json
 import math
 import os
+import struct
 import sys
 import time
+import zlib
 from collections import namedtuple
 from threading import Thread
 from typing import Iterable
 
-import redis
 import rospy
 from mavros_msgs.msg import State
 from mavros_msgs.srv import CommandBool, SetMode
 from geographic_msgs.msg import GeoPoseStamped
 from sensor_msgs.msg import NavSatFix
+
+from plugins.video_stream import Mp4VideoStream
+from plugins.redis.publisher import Publisher as RedisPublisher
+from plugins.redis.subscriber import Subscriber as RedisSubscriber
 
 LatLng = namedtuple("LatLng",
                     ("latitude", "longitude"))
@@ -95,6 +100,10 @@ class OffboardNode:
         heartbeat_thread.start()
         rospy.loginfo(f"Hearbeat thread: {heartbeat_thread}")
 
+        video_stream_thread = Thread(target=self._publish_video_stream, args=(REDIS_HOST, REDIS_PORT, f"stream/{self.uuid}"), daemon=True)
+        video_stream_thread.start()
+        rospy.loginfo(f"Video Stream thread: {video_stream_thread}")
+
         # Redis Thread
         redis_thread = Thread(target=self._subscribe_redis_queue, args=([self.uuid],), daemon=True)
         redis_thread.start()
@@ -145,6 +154,7 @@ class OffboardNode:
 
         # Join child processes/threads
         redis_thread.join()
+        video_stream_thread.join()
         heartbeat_thread.join()
 
     def assign_mission(self, missions: Iterable[LatLng]):
@@ -185,7 +195,8 @@ class OffboardNode:
     Sub Threads
     """
     def _send_heartbeat(self, host: str = "127.0.0.1", port: int = 6379, channel: str = "heartbeat"):
-        r = redis.Redis(host=host, port=port)
+        pub = RedisPublisher(host=host, port=port)
+        pub.initialize()
         while True:
             message = json.dumps({
                 "timestamp": int(time.time() * 1000),
@@ -198,18 +209,34 @@ class OffboardNode:
                 }
             })
             rospy.loginfo(f"[Redis] Publish: {message}")
-            r.publish(channel=channel, message=message)
-            r.publish(channel="global_position", message=message)
+            pub.publish(channel=channel, message=message)
+            pub.publish(channel="global_position", message=message)
             time.sleep(1)
 
+    def _publish_video_stream(self, host: str = "127.0.0.1", port: int = 6379, channel: str = "stream", fps: int = 30):
+        pub = RedisPublisher(host=host, port=port)
+        pub.initialize()
+        while True:
+            stream = Mp4VideoStream(os.path.join(os.path.dirname(os.path.dirname(__file__)), "000.mp4"))
+            for frame in stream:
+                height, width, channel = frame.shape
+                buffer = struct.pack(">I", height) + struct.pack(">I", width) + struct.pack(">I", channel) + frame.tobytes()
+                original_size = sys.getsizeof(buffer)
+                buffer = zlib.compress(buffer, level=5)
+                compressed_size = sys.getsizeof(buffer)
+                rospy.loginfo(f"[Redis] Original: {original_size} bytes / Compressed: {compressed_size} bytes ({compressed_size / original_size * 100:.2f}%)")
+                pub.publish(channel=channel, message=buffer)
+                time.sleep(1 / fps)
+
     def _subscribe_redis_queue(self, topics: Iterable[str]):
-        pubsub = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0).pubsub()
+        pubsub = RedisSubscriber(host=REDIS_HOST, port=REDIS_PORT, db=0)
+        pubsub.initialize()
         for topic in topics:
             pubsub.subscribe(topic)
 
         while True:
             try:
-                message = pubsub.get_message(timeout=5)
+                message = pubsub.get_message(timeout=5.0)
                 if not message:
                     continue
                 message_type = message.get("type")
